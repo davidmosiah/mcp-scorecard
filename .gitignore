@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.env
+.env.*
+*.log
+.DS_Store
+coverage/
+
+# Working/probe scratch space
+/tmp-targets/
+probe-*/
+
+# Local DBs and tokens — should never be in repo
+tokens.json
+*.sqlite
+*-real-pkg*
+
+# MCP Registry local auth tokens
+.mcpregistry_*_token
