@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.1 — 2026-05-23
+
+### Fixed
+
+- **`MUTATION_PATTERNS` now recognizes auth-flow mutations.** Added `exchange|revoke|grant|authorize|reset|clear|forget|destroy|wipe|logout|signout`. Previously tools like `whoop_exchange_code` and `whoop_revoke_access` were classified as reads, then incorrectly flagged in the annotations check for missing `readOnlyHint: true` (when they correctly had `readOnlyHint: false` because they DO mutate state).
+- **Agent-manifest probe now prefers `structuredContent` over text content.** MCP servers that default to `response_format: "markdown"` return Markdown in `content[0].text`, not JSON. The probe was attempting `JSON.parse()` on markdown and falling into the catch branch, falsely reporting "agent_manifest returned an unusable shape" even when the structured manifest was correctly present at `structuredContent`. Now we read structuredContent first and fall back to text-as-JSON only if structured is absent.
+
+### Notes
+
+- The smoke-test check (which warns when `scripts/smoke*.{mjs,js,ts}` is not in the npm tarball but `scripts.test` exists in package.json) is intentional behavior, not a bug. A WARN at score 7/10 reflects the honest tradeoff: dogfooders can't run your smoke test from the installed tarball. Repos that prefer to keep scripts/ out of the tarball can ignore this WARN — but visitors will still see the score drop.
+
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

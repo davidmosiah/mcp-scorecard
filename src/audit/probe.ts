@@ -130,21 +130,31 @@ export async function probeTarget(target: ResolvedTarget): Promise<ProbeSnapshot
           client.callTool({ name: manifestToolName, arguments: {} }),
           PROBE_TIMEOUT_MS,
           `call ${manifestToolName}`
-        )) as { content?: Array<{ type: string; text?: string }> };
-        // Most servers return a single JSON-encoded text content; try to parse.
-        const text = callRes.content?.find((c) => c.type === 'text')?.text;
-        if (text) {
-          try {
-            agentManifest = sanitizeManifestResponse(JSON.parse(text));
-          } catch {
-            // not JSON — still record that it returned something
-            agentManifest = {
-              has_recommended_first_calls: false,
-              recommended_first_calls_count: 0,
-              has_standard_tools: false,
-              standard_tools_count: 0,
-              raw_keys: []
-            };
+        )) as {
+          content?: Array<{ type: string; text?: string }>;
+          structuredContent?: unknown;
+        };
+        // Prefer MCP 2025-06+ structuredContent (object-shaped) over text content,
+        // because many servers default to markdown text rendering — JSON.parse on
+        // markdown throws and we'd incorrectly flag the manifest as malformed.
+        if (callRes.structuredContent && typeof callRes.structuredContent === 'object') {
+          agentManifest = sanitizeManifestResponse(callRes.structuredContent);
+        } else {
+          // Fall back to text content (most likely JSON-encoded for older servers).
+          const text = callRes.content?.find((c) => c.type === 'text')?.text;
+          if (text) {
+            try {
+              agentManifest = sanitizeManifestResponse(JSON.parse(text));
+            } catch {
+              // not JSON — record an unusable shape so the check can mention it
+              agentManifest = {
+                has_recommended_first_calls: false,
+                recommended_first_calls_count: 0,
+                has_standard_tools: false,
+                standard_tools_count: 0,
+                raw_keys: []
+              };
+            }
           }
         }
       } catch {

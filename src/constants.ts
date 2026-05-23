@@ -3,7 +3,7 @@
  * same string. Bumping this without updating package.json is intentional during
  * dev (keep src as source of truth); a release script can sync them.
  */
-export const SERVER_VERSION = '0.1.0';
+export const SERVER_VERSION = '0.1.1';
 
 /** Identifier used when the probe connects to a target MCP server. */
 export const PROBE_CLIENT_NAME = 'mcp-scorecard';
@@ -18,7 +18,7 @@ export const PROBE_ENV_FLAG = 'MCP_PROBE';
  * not mention an explicit gate, it loses points.
  */
 export const MUTATION_PATTERNS: RegExp[] = [
-  /(^|_)(set|update|delete|create|pause|resume|enable|disable|cancel|publish|send|remove|add|insert|patch|put|post)(_|$)/i
+  /(^|_)(set|update|delete|create|pause|resume|enable|disable|cancel|publish|send|remove|add|insert|patch|put|post|exchange|revoke|grant|authorize|reset|clear|forget|destroy|wipe|logout|signout|sign_out)(_|$)/i
 ];
 
 /**
