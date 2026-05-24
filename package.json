@@ -10,7 +10,9 @@
     "dist",
     "README.md",
     "LICENSE",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "AGENTS.md",
+    "llms.txt"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

@@ -1,0 +1,13 @@
+# mcp-scorecard
+Agent-readiness scorecard for MCP servers. Probes a target over stdio, runs 10 quality checks, and returns a 0-100 score with actionable fixes.
+
+Repository: https://github.com/davidmosiah/mcp-scorecard
+NPM: https://www.npmjs.com/package/mcp-scorecard
+Primary command: npm exec --yes --package=mcp-scorecard -- mcp-scorecard <package-or-repo>
+MCP command: none; this is a CLI auditor for MCP servers.
+
+- Use `mcp-scorecard <target> --json` when another agent or CI job needs structured output.
+- Use `mcp-scorecard <target> --min-score 80` as a release gate.
+- The probe launches targets with `MCP_PROBE=1`; MCP authors can use that env var to expose manifests without requiring live credentials.
+- The report is not a security audit. It checks contract shape, privacy affordances, mutation gating, resources, descriptions, annotations, and manifest discoverability.
+- Raw probed payloads should not be persisted. Reports should contain counts, labels, and redacted findings only.
