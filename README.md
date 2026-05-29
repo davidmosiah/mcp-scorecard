@@ -34,6 +34,50 @@ npx -y mcp-scorecard my-mcp --min-score 80
 npx -y mcp-scorecard my-mcp --json
 ```
 
+## Demo
+
+Real captured run auditing the official MCP reference server
+[`@modelcontextprotocol/server-everything`](https://www.npmjs.com/package/@modelcontextprotocol/server-everything)
+— nothing here is hand-edited, this is exactly what the CLI printed:
+
+```console
+$ npx -y mcp-scorecard @modelcontextprotocol/server-everything
+
+# mcp-scorecard - @modelcontextprotocol/server-everything @2026.1.26
+
+**Agent-readiness score:** 44/100
+
+- [PASS] Schema validity              (13/13 tools have valid input schema)
+- [FAIL] Tool naming convention       (12/13 tools violate snake_case)
+- [FAIL] Privacy modes documented     (only 1 tool(s) mention privacy modes)
+- [PASS] Mutation gating              (no write tools — n/a)
+- [FAIL] Agent manifest               (no agent_manifest tool)
+- [FAIL] Smoke test                   (no smoke script and no test script)
+- [PASS] Resources advertised         (7 resources registered)
+- [PASS] Tool descriptions            (avg 88 chars across 13 tools)
+- [FAIL] Annotations                  (0/13 read tools annotated)
+- [FAIL] Manifest discoverability     (no discovery tools)
+
+## Details
+### Tool naming convention
+- Non-snake_case names: get-annotated-message, get-env, get-resource-links, get-resource-reference, get-structured-content, get-sum, get-tiny-image, gzip-file-as-resource, toggle-simulated-logging, toggle-subscriber-updates
+### Annotations
+- Missing readOnlyHint: echo, get-annotated-message, get-env, get-resource-links, get-resource-reference, get-structured-content, get-sum, get-tiny-image, gzip-file-as-resource, toggle-simulated-logging
+
+## Suggested fixes
+- Rename tools to lowercase snake_case (a-z, 0-9, _).
+- Add a `privacy_mode` parameter (summary | structured | raw) on read tools so agents can request only what they need.
+- Expose a `<prefix>_agent_manifest` tool that returns { recommended_first_calls, standard_tools, ... } so agents can self-onboard.
+- Add `scripts/smoke-tools.mjs` that boots the server via StdioClientTransport and asserts the tool list.
+- Add `annotations: { readOnlyHint: true, openWorldHint: false }` to every read tool definition.
+- Expose discovery tools so agents can self-onboard: `*_agent_manifest`, `*_data_inventory`, `*_capabilities`, `*_connection_status`.
+```
+
+The reference server is a feature showcase, not a production integration — a 44 is
+expected and is exactly why the conventions checks exist. Agent-oriented servers
+that adopt snake_case naming, a manifest tool, and read-only annotations land in
+the 80s and 90s.
+
 ## What it checks
 
 Ten quality dimensions, each scored 0-10. Final score is the sum, capped at 100.
