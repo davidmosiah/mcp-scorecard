@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agentskills.io/schema/v0.2.0/index.json",
+  "version": "0.2.0",
+  "skills": [
+    {
+      "name": "mcp-scorecard",
+      "type": "mcp",
+      "description": "Grade any MCP server's agent-readiness — 0–100 score across 10 checks with actionable fixes. Local-first, no credentials. Install: npx -y mcp-scorecard <target>.",
+      "url": "https://mcp-scorecard.vercel.app/.well-known/agent-skills/mcp-scorecard/SKILL.md",
+      "digest": "sha256:6c2186fdf2eb7e207a8c049067fba579db94a8fd3291b19d1ae4aebca36856f6",
+      "sha256": "6c2186fdf2eb7e207a8c049067fba579db94a8fd3291b19d1ae4aebca36856f6"
+    }
+  ]
+}

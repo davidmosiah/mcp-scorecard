@@ -1,0 +1,46 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "mcp-scorecard leaderboard API",
+    "version": "0.1.3",
+    "description": "Read-only access to the mcp-scorecard agent-readiness leaderboard. To audit your own MCP server, run: npx -y mcp-scorecard <target>.",
+    "license": { "name": "MIT", "url": "https://opensource.org/licenses/MIT" }
+  },
+  "servers": [{ "url": "https://mcp-scorecard.vercel.app" }],
+  "paths": {
+    "/leaderboard.json": {
+      "get": {
+        "operationId": "getLeaderboard",
+        "summary": "The agent-readiness leaderboard of scored MCP servers.",
+        "responses": {
+          "200": {
+            "description": "Leaderboard",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "generated": { "type": "string" },
+                    "scorecard_version": { "type": "string" },
+                    "leaderboard": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "rank": { "type": "integer" },
+                          "target": { "type": "string" },
+                          "score": { "type": "integer" },
+                          "grade": { "type": "string", "enum": ["A", "B", "C", "D", "F"] }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

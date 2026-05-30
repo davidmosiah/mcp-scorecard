@@ -1,0 +1,30 @@
+{
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        { "key": "Link", "value": "</llms.txt>; rel=\"alternate\"; type=\"text/plain\", </index.md>; rel=\"alternate\"; type=\"text/markdown\", </sitemap.xml>; rel=\"sitemap\", </.well-known/mcp/server-card.json>; rel=\"service-desc\"; type=\"application/json\", </.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", </leaderboard.json>; rel=\"describedby\"; type=\"application/json\"" },
+        { "key": "X-Robots-Tag", "value": "all" }
+      ]
+    },
+    { "source": "/leaderboard.json", "headers": [
+      { "key": "Access-Control-Allow-Origin", "value": "*" },
+      { "key": "Content-Type", "value": "application/json; charset=utf-8" },
+      { "key": "Cache-Control", "value": "public, max-age=3600" } ] },
+    { "source": "/openapi.json", "headers": [
+      { "key": "Access-Control-Allow-Origin", "value": "*" },
+      { "key": "Content-Type", "value": "application/json; charset=utf-8" } ] },
+    { "source": "/llms.txt", "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }] },
+    { "source": "/auth.md", "headers": [{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" }] },
+    { "source": "/index.md", "headers": [{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" }] },
+    { "source": "/.well-known/api-catalog", "headers": [
+      { "key": "Access-Control-Allow-Origin", "value": "*" },
+      { "key": "Content-Type", "value": "application/linkset+json; charset=utf-8" } ] },
+    { "source": "/.well-known/mcp/server-card.json", "headers": [
+      { "key": "Access-Control-Allow-Origin", "value": "*" },
+      { "key": "Content-Type", "value": "application/json; charset=utf-8" } ] },
+    { "source": "/.well-known/agent-skills/index.json", "headers": [
+      { "key": "Access-Control-Allow-Origin", "value": "*" },
+      { "key": "Content-Type", "value": "application/json; charset=utf-8" } ] }
+  ]
+}

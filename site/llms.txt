@@ -1,0 +1,26 @@
+# mcp-scorecard
+
+> A CLI + MCP that grades **any MCP server's agent-readiness**. It probes a target over stdio, runs **10 checks** (each 0–10), and outputs a **0–100 score** with actionable fixes. Open source (MIT), local-first, zero credentials. Notably, the official `@modelcontextprotocol` reference servers score 34–44/100.
+
+## Use it (no auth, no API key)
+
+```
+npx -y mcp-scorecard <target>
+```
+
+`<target>` can be a published npm package, a GitHub repo URL (auto-resolves to npm/local dist), or a local `dist/index.js`. Add `--json` for CI piping, `--min-score 80` to gate a build.
+
+## The 10 checks
+
+manifest discoverability · tool naming · tool descriptions · schema validity · annotations · mutation gating · privacy modes · resources · agent manifest · smoke test.
+
+## Links
+
+- Live + leaderboard: https://mcp-scorecard.vercel.app
+- Leaderboard data (JSON): https://mcp-scorecard.vercel.app/leaderboard.json
+- Source (GitHub): https://github.com/davidmosiah/mcp-scorecard
+- Package (npm): https://www.npmjs.com/package/mcp-scorecard
+
+## Leaderboard (2026-05-30, top of 11 scored)
+
+garmin-mcp-unofficial 97 (A) · whoop/strava/oura/google-health-mcp-unofficial 90 (A) · delx-mcp-server 58 (F) · @upstash/context7-mcp 51 (F) · @modelcontextprotocol/server-everything 44 (F) · sequential-thinking 44 (F) · @playwright/mcp 35 (F) · server-memory 34 (F).

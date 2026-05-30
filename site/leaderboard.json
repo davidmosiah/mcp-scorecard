@@ -1,0 +1,73 @@
+{
+ "generated": "2026-05-30",
+ "scorecard_version": "0.1.3",
+ "note": "Scored by mcp-scorecard's 10 agent-readiness checks (npx -y mcp-scorecard <target>).",
+ "leaderboard": [
+  {
+   "rank": 1,
+   "target": "garmin-mcp-unofficial",
+   "score": 97,
+   "grade": "A"
+  },
+  {
+   "rank": 2,
+   "target": "whoop-mcp-unofficial",
+   "score": 90,
+   "grade": "A"
+  },
+  {
+   "rank": 3,
+   "target": "strava-mcp-unofficial",
+   "score": 90,
+   "grade": "A"
+  },
+  {
+   "rank": 4,
+   "target": "oura-mcp-unofficial",
+   "score": 90,
+   "grade": "A"
+  },
+  {
+   "rank": 5,
+   "target": "google-health-mcp-unofficial",
+   "score": 90,
+   "grade": "A"
+  },
+  {
+   "rank": 6,
+   "target": "delx-mcp-server",
+   "score": 58,
+   "grade": "F"
+  },
+  {
+   "rank": 7,
+   "target": "@upstash/context7-mcp",
+   "score": 51,
+   "grade": "F"
+  },
+  {
+   "rank": 8,
+   "target": "@modelcontextprotocol/server-everything",
+   "score": 44,
+   "grade": "F"
+  },
+  {
+   "rank": 9,
+   "target": "@modelcontextprotocol/server-sequential-thinking",
+   "score": 44,
+   "grade": "F"
+  },
+  {
+   "rank": 10,
+   "target": "@playwright/mcp",
+   "score": 35,
+   "grade": "F"
+  },
+  {
+   "rank": 11,
+   "target": "@modelcontextprotocol/server-memory",
+   "score": 34,
+   "grade": "F"
+  }
+ ]
+}

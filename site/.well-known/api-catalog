@@ -1,0 +1,18 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://mcp-scorecard.vercel.app/leaderboard.json",
+      "service-desc": [
+        { "href": "https://mcp-scorecard.vercel.app/openapi.json", "type": "application/json", "title": "OpenAPI description of the leaderboard data endpoint" }
+      ],
+      "service-doc": [
+        { "href": "https://github.com/davidmosiah/mcp-scorecard", "type": "text/html", "title": "mcp-scorecard documentation" },
+        { "href": "https://mcp-scorecard.vercel.app/llms.txt", "type": "text/plain", "title": "LLM-readable summary" }
+      ],
+      "service-meta": [
+        { "href": "https://mcp-scorecard.vercel.app/.well-known/mcp/server-card.json", "type": "application/json", "title": "MCP Server Card" }
+      ],
+      "status": [ { "href": "https://mcp-scorecard.vercel.app/leaderboard.json" } ]
+    }
+  ]
+}
