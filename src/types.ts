@@ -73,7 +73,44 @@ export type CheckId =
   | 'resources'
   | 'tool_descriptions'
   | 'annotations'
-  | 'manifest_discoverability';
+  | 'manifest_discoverability'
+  // --- web mode (hosted/remote MCP servers + sites) ---
+  | 'web_https'
+  | 'web_security_headers'
+  | 'web_auth_posture'
+  | 'web_oauth_discovery'
+  | 'web_llms_txt'
+  | 'web_mcp_server_card'
+  | 'web_agent_skills'
+  | 'web_api_catalog'
+  | 'web_robots_signals'
+  | 'web_structured_data';
+
+/**
+ * Snapshot captured from a hosted/remote target over HTTP — the parallel of
+ * ProbeSnapshot for the web/security audit path. Pure scorers read this.
+ */
+export interface WebProbe {
+  url: string;
+  https: boolean;
+  rootStatus: number;
+  headers: Record<string, string>;
+  llmsTxt: boolean;
+  serverCard: boolean;
+  serverCardValid: boolean;
+  agentSkills: boolean;
+  apiCatalog: boolean;
+  robotsTxt: boolean;
+  aiBotRules: boolean;
+  contentSignal: boolean;
+  sitemap: boolean;
+  oauthProtectedResource: boolean;
+  oauthAuthServer: boolean;
+  authMd: boolean;
+  jsonLd: boolean;
+  ogTags: boolean;
+  markdownNegotiation: boolean;
+}
 
 export interface CheckResult {
   id: CheckId;

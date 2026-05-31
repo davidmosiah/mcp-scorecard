@@ -23,7 +23,7 @@ import { aggregateScore } from './scorer.js';
 
 type CheckId = CheckResult['id'];
 
-const CHECK_LABELS: Record<CheckId, string> = {
+const CHECK_LABELS: Partial<Record<CheckId, string>> = {
   schema_validity: 'Schema validity',
   tool_naming: 'Tool naming convention',
   privacy_modes: 'Privacy modes documented',
@@ -43,7 +43,7 @@ function safeRun(id: CheckId, fn: () => CheckResult): CheckResult {
     const msg = err instanceof Error ? err.message : String(err);
     return {
       id,
-      label: CHECK_LABELS[id],
+      label: CHECK_LABELS[id] ?? id,
       score: 0,
       status: 'fail',
       summary: 'check threw an error',

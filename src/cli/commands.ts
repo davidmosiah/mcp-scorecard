@@ -15,6 +15,12 @@ import { runAudit } from '../audit/runner.js';
 import { resolveGithubRepo } from '../resolvers/github-resolver.js';
 import { resolveLocal } from '../resolvers/local-resolver.js';
 import { resolveNpmPackage } from '../resolvers/npm-resolver.js';
+import { runWebAudit } from '../audit/web/web-runner.js';
+
+/** A hosted/remote target (http[s] URL that isn't a GitHub repo) → web audit path. */
+function isWebTarget(subject: string): boolean {
+  return /^https?:\/\//.test(subject) && !/github\.com/.test(subject);
+}
 import type { ResolvedTarget } from '../types.js';
 import { renderJson, renderMarkdown } from './output.js';
 
@@ -102,20 +108,30 @@ export async function run(argv: string[]): Promise<number> {
     return 2;
   }
 
-  let target: ResolvedTarget;
-  try {
-    target = await resolveSubject(parsed.subject);
-  } catch (err) {
-    process.stderr.write(`Resolver error: ${err instanceof Error ? err.message : String(err)}\n`);
-    return 1;
-  }
-
   let report: Awaited<ReturnType<typeof runAudit>>;
-  try {
-    report = await runAudit(target);
-  } catch (err) {
-    process.stderr.write(`Audit error: ${err instanceof Error ? err.message : String(err)}\n`);
-    return 1;
+
+  if (isWebTarget(parsed.subject)) {
+    // Hosted/remote MCP server or site → web security + agent-readiness audit.
+    try {
+      report = await runWebAudit(parsed.subject);
+    } catch (err) {
+      process.stderr.write(`Web audit error: ${err instanceof Error ? err.message : String(err)}\n`);
+      return 1;
+    }
+  } else {
+    let target: ResolvedTarget;
+    try {
+      target = await resolveSubject(parsed.subject);
+    } catch (err) {
+      process.stderr.write(`Resolver error: ${err instanceof Error ? err.message : String(err)}\n`);
+      return 1;
+    }
+    try {
+      report = await runAudit(target);
+    } catch (err) {
+      process.stderr.write(`Audit error: ${err instanceof Error ? err.message : String(err)}\n`);
+      return 1;
+    }
   }
 
   process.stdout.write(parsed.json ? renderJson(report) : renderMarkdown(report));

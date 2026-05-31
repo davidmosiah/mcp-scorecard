@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+- **Web mode**: audit hosted/remote MCP servers + sites by URL (`npx -y mcp-scorecard https://your-server`). Adds 10 security + agent-readiness checks: HTTPS/TLS, security headers, auth posture, OAuth discovery, llms.txt, MCP Server Card (SEP-1649), Agent Skills index, API catalog (RFC 9727), robots + AI/Content-Signal, structured metadata (JSON-LD / OG / Markdown-for-Agents). The stdio path (10 protocol-quality checks) is unchanged.
+- Added `scripts/test-web.mjs` to the test suite (offline, fixture-based).
+
+
 ## 0.1.3 — 2026-05-29
 
 ### Docs
