@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+
+- **Run AS an MCP server** (`mcp-scorecard serve`): exposes an `audit` tool so agents can score any MCP server mid-task — an MCP that scores MCPs. Add to a client: `{"command":"npx","args":["-y","mcp-scorecard","serve"]}`.
+- **Letter grade (A–F) + `--badge`**: `npx mcp-scorecard <t> --badge` emits a shields.io markdown badge for your README.
+- **Top fixes**: the markdown report now leads with the 3 changes that gain the most points.
+- **Deeper web security checks** (web mode, now 12 checks): exposed `/.git` and `/.env` detection (content-verified, no SPA false positives) and CORS posture (flags wildcard/reflected origin + credentials).
+- GitHub Action (`action.yml`) to gate CI on a minimum score.
+
+
+
 ## 0.2.0
 
 - **Web mode**: audit hosted/remote MCP servers + sites by URL (`npx -y mcp-scorecard https://your-server`). Adds 10 security + agent-readiness checks: HTTPS/TLS, security headers, auth posture, OAuth discovery, llms.txt, MCP Server Card (SEP-1649), Agent Skills index, API catalog (RFC 9727), robots + AI/Content-Signal, structured metadata (JSON-LD / OG / Markdown-for-Agents). The stdio path (10 protocol-quality checks) is unchanged.

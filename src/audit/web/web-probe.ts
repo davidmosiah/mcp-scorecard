@@ -7,14 +7,16 @@ import type { WebProbe } from '../../types.js';
 
 const UA = 'mcp-scorecard/0.2 (+https://mcp-scorecard.vercel.app)';
 
-async function get(url: string, opts: { timeoutMs?: number; accept?: string } = {}): Promise<{ status: number; text: string; headers: Record<string, string> } | null> {
+async function get(url: string, opts: { timeoutMs?: number; accept?: string; origin?: string } = {}): Promise<{ status: number; text: string; headers: Record<string, string> } | null> {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 8000);
   try {
+    const headersIn: Record<string, string> = { 'user-agent': UA, accept: opts.accept ?? '*/*' };
+    if (opts.origin) headersIn['origin'] = opts.origin;
     const res = await fetch(url, {
       signal: ctrl.signal,
       redirect: 'follow',
-      headers: { 'user-agent': UA, accept: opts.accept ?? '*/*' }
+      headers: headersIn
     });
     const headers: Record<string, string> = {};
     res.headers.forEach((v, k) => { headers[k.toLowerCase()] = v; });
@@ -35,7 +37,7 @@ export async function fetchWebProbe(rawUrl: string): Promise<WebProbe> {
   const u = new URL(base);
   const at = (p: string) => `${u.origin}${p}`;
 
-  const [root, llms, robots, card, skills, apiCat, sitemap, oauthPR, oauthAS, authMd, mdNeg] = await Promise.all([
+  const [root, llms, robots, card, skills, apiCat, sitemap, oauthPR, oauthAS, authMd, mdNeg, gitCfg, envFile, secTxt, corsProbe] = await Promise.all([
     get(base + '/'),
     get(at('/llms.txt')),
     get(at('/robots.txt')),
@@ -46,8 +48,19 @@ export async function fetchWebProbe(rawUrl: string): Promise<WebProbe> {
     get(at('/.well-known/oauth-protected-resource')),
     get(at('/.well-known/oauth-authorization-server')),
     get(at('/auth.md')),
-    get(base + '/', { accept: 'text/markdown' })
+    get(base + '/', { accept: 'text/markdown' }),
+    get(at('/.git/config')),
+    get(at('/.env')),
+    get(at('/.well-known/security.txt')),
+    get(base + '/', { origin: 'https://mcp-scorecard.test' })
   ]);
+
+  // Verify CONTENT (not just 200) — SPAs/CDNs return 200 + index.html for any path.
+  const gitExposed = ok(gitCfg) && /\[core\]|repositoryformatversion/i.test(gitCfg!.text) && !/<html/i.test(gitCfg!.text);
+  const envExposed = ok(envFile) && /^[A-Z0-9_]+=/m.test(envFile!.text) && !/<html/i.test(envFile!.text);
+  const securityTxt = ok(secTxt) && /contact:/i.test(secTxt!.text);
+  const corsAllowOrigin = corsProbe?.headers['access-control-allow-origin'] ?? null;
+  const corsAllowCredentials = (corsProbe?.headers['access-control-allow-credentials'] ?? '').toLowerCase() === 'true';
 
   const robotsText = ok(robots) ? robots!.text.toLowerCase() : '';
   const rootHtml = ok(root) ? root!.text : '';
@@ -76,6 +89,11 @@ export async function fetchWebProbe(rawUrl: string): Promise<WebProbe> {
     authMd: ok(authMd) && /auth\.md/i.test(authMd!.text),
     jsonLd: /application\/ld\+json/i.test(rootHtml),
     ogTags: /property=["']og:/i.test(rootHtml),
-    markdownNegotiation: !!mdNeg && (mdNeg.headers['content-type'] || '').includes('text/markdown')
+    markdownNegotiation: !!mdNeg && (mdNeg.headers['content-type'] || '').includes('text/markdown'),
+    gitExposed,
+    envExposed,
+    securityTxt,
+    corsAllowOrigin,
+    corsAllowCredentials
   };
 }

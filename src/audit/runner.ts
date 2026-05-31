@@ -8,6 +8,7 @@
 
 import { SERVER_VERSION } from '../constants.js';
 import type { AuditReport, CheckResult, ResolvedTarget } from '../types.js';
+import { toGrade } from '../types.js';
 import { checkAgentManifest } from './checks/agent-manifest.js';
 import { checkAnnotations } from './checks/annotations.js';
 import { checkManifestDiscoverability } from './checks/manifest-discoverability.js';
@@ -69,6 +70,7 @@ export async function runAudit(target: ResolvedTarget): Promise<AuditReport> {
     safeRun('manifest_discoverability', () => checkManifestDiscoverability(snapshot))
   ];
 
+  const totalScore = aggregateScore(checks);
   return {
     target: {
       displayName: target.displayName,
@@ -76,7 +78,9 @@ export async function runAudit(target: ResolvedTarget): Promise<AuditReport> {
       serverName: snapshot.serverInfo.name,
       serverVersion: snapshot.serverInfo.version
     },
-    totalScore: aggregateScore(checks),
+    totalScore,
+    grade: toGrade(totalScore),
+    mode: 'stdio',
     checks,
     generatedAt: new Date().toISOString(),
     scorecardVersion: SERVER_VERSION

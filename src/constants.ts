@@ -3,7 +3,7 @@
  * same string. Bumping this without updating package.json is intentional during
  * dev (keep src as source of truth); a release script can sync them.
  */
-export const SERVER_VERSION = '0.1.3';
+export const SERVER_VERSION = '0.3.0';
 
 /** Identifier used when the probe connects to a target MCP server. */
 export const PROBE_CLIENT_NAME = 'mcp-scorecard';

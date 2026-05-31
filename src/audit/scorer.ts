@@ -14,6 +14,6 @@ export function aggregateScore(checks: CheckResult[]): number {
   // Use the expected denominator (10 checks * 10 each = 100); if a check
   // failed to even run, we still divide by 10 so the score reflects gaps.
   const sum = checks.reduce((acc, c) => acc + Math.max(0, Math.min(10, c.score)), 0);
-  const denom = EXPECTED_CHECK_COUNT * 10;
+  const denom = checks.length * 10; // supports stdio (10) + web (12) modes
   return Math.round((sum / denom) * 100);
 }

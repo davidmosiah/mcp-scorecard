@@ -229,3 +229,22 @@ production agent.
 ## License
 
 MIT - see [LICENSE](LICENSE).
+
+---
+
+## New in v0.3.0 — differentiators
+
+- **Run it AS an MCP server** so agents can call it mid-task:
+  ```json
+  { "mcpServers": { "mcp-scorecard": { "command": "npx", "args": ["-y", "mcp-scorecard", "serve"] } } }
+  ```
+  Then your agent can `audit("some-mcp-server")` before installing it. *An MCP that scores MCPs.*
+- **Audit hosted/remote servers** by URL (12 security + agent-readiness checks): `npx -y mcp-scorecard https://your-server`
+- **Badge for your README:** `npx -y mcp-scorecard my-mcp --badge` → a shields.io markdown badge.
+- **GitHub Action:**
+  ```yaml
+  - uses: davidmosiah/mcp-scorecard@v0.3.0
+    with:
+      target: dist/index.js
+      min-score: 80
+  ```

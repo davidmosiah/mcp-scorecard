@@ -84,7 +84,9 @@ export type CheckId =
   | 'web_agent_skills'
   | 'web_api_catalog'
   | 'web_robots_signals'
-  | 'web_structured_data';
+  | 'web_structured_data'
+  | 'web_exposed_paths'
+  | 'web_cors_posture';
 
 /**
  * Snapshot captured from a hosted/remote target over HTTP — the parallel of
@@ -110,6 +112,11 @@ export interface WebProbe {
   jsonLd: boolean;
   ogTags: boolean;
   markdownNegotiation: boolean;
+  gitExposed: boolean;
+  envExposed: boolean;
+  securityTxt: boolean;
+  corsAllowOrigin: string | null;
+  corsAllowCredentials: boolean;
 }
 
 export interface CheckResult {
@@ -133,7 +140,13 @@ export interface AuditReport {
     serverVersion?: string;
   };
   totalScore: number; // 0..100
+  grade: 'A' | 'B' | 'C' | 'D' | 'F';
+  mode: 'stdio' | 'web';
   checks: CheckResult[];
   generatedAt: string; // ISO timestamp
   scorecardVersion: string;
+}
+
+export function toGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
+  return score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
 }

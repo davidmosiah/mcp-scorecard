@@ -1,0 +1,18 @@
+name: 'mcp-scorecard'
+description: "Gate CI on your MCP server's agent-readiness score (0–100). Audits an npm package, local dist, or hosted https:// MCP server."
+branding:
+  icon: 'shield'
+  color: 'green'
+inputs:
+  target:
+    description: 'What to audit: an npm package name, a local dist path (e.g. dist/index.js), or a hosted https:// MCP server URL.'
+    required: true
+  min-score:
+    description: 'Fail the job if the score is below this (0–100).'
+    required: false
+    default: '80'
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      run: npx -y mcp-scorecard "${{ inputs.target }}" --min-score "${{ inputs.min-score }}"

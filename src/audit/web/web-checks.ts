@@ -64,6 +64,19 @@ export function scoreWeb(p: WebProbe): CheckResult[] {
     mk('web_structured_data', 'Structured metadata',
       (p.jsonLd ? 4 : 0) + (p.ogTags ? 3 : 0) + (p.markdownNegotiation ? 3 : 0),
       `json-ld:${p.jsonLd ? 'y' : 'n'} og:${p.ogTags ? 'y' : 'n'} markdown-for-agents:${p.markdownNegotiation ? 'y' : 'n'}`,
-      (p.jsonLd && p.ogTags && p.markdownNegotiation) ? [] : ['Add JSON-LD (schema.org), OpenGraph tags, and Markdown-for-Agents (Accept: text/markdown).'])
+      (p.jsonLd && p.ogTags && p.markdownNegotiation) ? [] : ['Add JSON-LD (schema.org), OpenGraph tags, and Markdown-for-Agents (Accept: text/markdown).']),
+
+    mk('web_exposed_paths', 'No exposed secrets', (p.gitExposed || p.envExposed) ? 0 : 10,
+      (p.gitExposed || p.envExposed)
+        ? `CRITICAL: ${[p.gitExposed && '/.git/config', p.envExposed && '/.env'].filter(Boolean).join(' + ')} is publicly readable`
+        : 'no /.git or /.env exposed' + (p.securityTxt ? ' (+ security.txt present)' : ''),
+      (p.gitExposed || p.envExposed) ? ['URGENT: block public access to /.git and /.env — they leak source history and credentials.'] : []),
+
+    mk('web_cors_posture', 'CORS posture',
+      (p.corsAllowCredentials && (p.corsAllowOrigin === '*' || /mcp-scorecard\.test/.test(p.corsAllowOrigin || ''))) ? 2 : 10,
+      (p.corsAllowCredentials && (p.corsAllowOrigin === '*' || /mcp-scorecard\.test/.test(p.corsAllowOrigin || '')))
+        ? 'DANGEROUS: credentials allowed with wildcard/reflected origin'
+        : `safe (allow-origin: ${p.corsAllowOrigin ?? 'none'}, credentials: ${p.corsAllowCredentials})`,
+      (p.corsAllowCredentials && (p.corsAllowOrigin === '*' || /mcp-scorecard\.test/.test(p.corsAllowOrigin || ''))) ? ['Never combine Access-Control-Allow-Credentials:true with a wildcard or reflected Access-Control-Allow-Origin.'] : [])
   ];
 }

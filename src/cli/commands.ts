@@ -22,20 +22,23 @@ function isWebTarget(subject: string): boolean {
   return /^https?:\/\//.test(subject) && !/github\.com/.test(subject);
 }
 import type { ResolvedTarget } from '../types.js';
-import { renderJson, renderMarkdown } from './output.js';
+import { renderBadge, renderJson, renderMarkdown } from './output.js';
 
 const USAGE = `mcp-scorecard v${SERVER_VERSION}
 
 Usage:
-  mcp-scorecard <subject> [--json] [--min-score N]
+  mcp-scorecard <subject> [--json|--badge] [--min-score N]
+  mcp-scorecard serve            run AS an MCP server (agents can call the 'audit' tool)
 
 Subjects:
   npm-package            e.g. whoop-mcp-unofficial[@version]
   github-url             e.g. https://github.com/davidmosiah/whoop-mcp
+  https://host           a HOSTED/remote MCP server or site (web security + agent-readiness audit)
   /abs/path/dist/index.js  built MCP server entry
 
 Flags:
   --json           emit structured JSON to stdout
+  --badge          emit a markdown shields.io badge (paste into your README)
   --min-score N    exit non-zero if total score < N (default 0)
   --version        print version
   --help, -h       print this message
@@ -47,18 +50,20 @@ counts and field names are recorded. See the README for the security model.`;
 interface ParsedArgs {
   subject?: string;
   json: boolean;
+  badge: boolean;
   minScore: number;
   help: boolean;
   showVersion: boolean;
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const out: ParsedArgs = { json: false, minScore: 0, help: false, showVersion: false };
+  const out: ParsedArgs = { json: false, badge: false, minScore: 0, help: false, showVersion: false };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--help' || arg === '-h') out.help = true;
     else if (arg === '--version') out.showVersion = true;
     else if (arg === '--json') out.json = true;
+    else if (arg === '--badge') out.badge = true;
     else if (arg === '--min-score') {
       const v = argv[++i];
       const n = Number.parseInt(v, 10);
@@ -87,6 +92,16 @@ async function resolveSubject(subject: string): Promise<ResolvedTarget> {
 }
 
 export async function run(argv: string[]): Promise<number> {
+  // `serve` → run mcp-scorecard itself AS an MCP server (agents call the audit tool).
+  if (argv[0] === 'serve') {
+    const { serve } = await import('../mcp-server.js');
+    await serve();
+    // Keep the process alive for the stdio transport (the CLI entry would
+    // otherwise process.exit() as soon as run() resolves).
+    await new Promise<void>(() => {});
+    return 0;
+  }
+
   let parsed: ParsedArgs;
   try {
     parsed = parseArgs(argv);
@@ -134,7 +149,7 @@ export async function run(argv: string[]): Promise<number> {
     }
   }
 
-  process.stdout.write(parsed.json ? renderJson(report) : renderMarkdown(report));
+  process.stdout.write(parsed.badge ? renderBadge(report) : parsed.json ? renderJson(report) : renderMarkdown(report));
   process.stdout.write('\n');
 
   if (report.totalScore < parsed.minScore) {
