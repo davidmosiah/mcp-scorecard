@@ -248,3 +248,8 @@ MIT - see [LICENSE](LICENSE).
       target: dist/index.js
       min-score: 80
   ```
+
+### v0.4.0
+- `mcp-scorecard compare a b c` — side-by-side ranking.
+- `--profile security|quality|agent-ready` — score one category. `--baseline old.json` — regression diff. `--html` — shareable scorecard.
+- Checks explainer: https://mcp-scorecard.vercel.app/checks.html

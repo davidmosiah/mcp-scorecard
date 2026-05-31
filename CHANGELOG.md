@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+- **Compare** (`mcp-scorecard compare a b c`): audit several targets, print a ranked side-by-side table.
+- **Baseline/regression** (`--baseline old.json`): diff a run against a previous `--json` report (CI guardrail).
+- **Scoring profiles** (`--profile security|quality|agent-ready`): score only one category, rescaled.
+- **HTML report** (`--html`): a self-contained, shareable scorecard.
+- **Checks explainer page** (`/checks.html` on the site, generated from the single-source catalog): every check, its category, and why it matters.
+
+
+
 ## 0.3.0
 
 - **Run AS an MCP server** (`mcp-scorecard serve`): exposes an `audit` tool so agents can score any MCP server mid-task — an MCP that scores MCPs. Add to a client: `{"command":"npx","args":["-y","mcp-scorecard","serve"]}`.

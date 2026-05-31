@@ -1,6 +1,6 @@
 {
   "name": "mcp-scorecard",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "mcpName": "io.github.davidmosiah/mcp-scorecard",
   "description": "Grade any MCP server's agent-readiness in one command \u2014 stdio (10 protocol checks) AND hosted/remote servers (10 security + web agent-readiness checks). Open source, local-first, no credentials.",
   "type": "module",
@@ -22,9 +22,11 @@
     "dev": "tsx src/index.ts",
     "test:checks": "node scripts/test-checks.mjs",
     "test:self": "node scripts/smoke-self.mjs",
-    "test": "npm run typecheck && npm run build && npm run test:checks && npm run test:self && npm run test:web",
+    "test": "npm run typecheck && npm run build && npm run test:checks && npm run test:self && npm run test:web && npm run test:features",
     "prepublishOnly": "npm test",
-    "test:web": "node scripts/test-web.mjs"
+    "test:web": "node scripts/test-web.mjs",
+    "test:features": "node scripts/test-features.mjs",
+    "gen:checks": "node scripts/gen-checks-page.mjs"
   },
   "keywords": [
     "mcp",
