@@ -19,6 +19,49 @@ import { resolveGithubRepo } from './resolvers/github-resolver.js';
 import { resolveLocal } from './resolvers/local-resolver.js';
 import { resolveNpmPackage } from './resolvers/npm-resolver.js';
 
+/**
+ * JSON Schema for the audit tool's structured output (mirrors AuditReport).
+ * Declared as a plain object to stay decoupled from the SDK's zod version.
+ * Lets agents grade-gate reliably (e.g. only install if grade <= "B").
+ */
+const AUDIT_OUTPUT_SCHEMA = {
+  type: 'object',
+  properties: {
+    target: {
+      type: 'object',
+      properties: {
+        displayName: { type: 'string' },
+        version: { type: 'string' },
+        serverName: { type: 'string' },
+        serverVersion: { type: 'string' }
+      },
+      required: ['displayName']
+    },
+    totalScore: { type: 'number', description: '0–100 agent-readiness + security score' },
+    grade: { type: 'string', enum: ['A', 'B', 'C', 'D', 'F'] },
+    mode: { type: 'string', enum: ['stdio', 'web'] },
+    checks: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          label: { type: 'string' },
+          score: { type: 'number' },
+          status: { type: 'string', enum: ['pass', 'warn', 'fail'] },
+          summary: { type: 'string' },
+          details: { type: 'array', items: { type: 'string' } },
+          fixes: { type: 'array', items: { type: 'string' } }
+        },
+        required: ['id', 'label', 'score', 'status']
+      }
+    },
+    generatedAt: { type: 'string' },
+    scorecardVersion: { type: 'string' }
+  },
+  required: ['target', 'totalScore', 'grade', 'mode', 'checks', 'generatedAt', 'scorecardVersion']
+};
+
 async function auditTarget(target: string): Promise<AuditReport> {
   if (/^https?:\/\//.test(target) && !/github\.com/.test(target)) {
     return runWebAudit(target);
@@ -55,7 +98,9 @@ export async function serve(): Promise<void> {
             }
           },
           required: ['target']
-        }
+        },
+        annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
+        outputSchema: AUDIT_OUTPUT_SCHEMA
       }
     ]
   }));
@@ -71,7 +116,10 @@ export async function serve(): Promise<void> {
     try {
       const report = await auditTarget(target);
       const summary = `${report.target.displayName}: ${report.totalScore}/100 (grade ${report.grade}, ${report.mode} mode)`;
-      return { content: [{ type: 'text', text: `${summary}\n\n${JSON.stringify(report, null, 2)}` }] };
+      return {
+        content: [{ type: 'text', text: `${summary}\n\n${JSON.stringify(report, null, 2)}` }],
+        structuredContent: report as unknown as Record<string, unknown>
+      };
     } catch (err) {
       return {
         content: [{ type: 'text', text: `audit failed for "${target}": ${err instanceof Error ? err.message : String(err)}` }],

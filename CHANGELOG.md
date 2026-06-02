@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- **The `audit` MCP tool now ships agent-expanding metadata** (dogfooding our own checks):
+  - **Tool annotations** — `readOnlyHint: true`, `idempotentHint: true`, `openWorldHint: true` (it inspects/fetches remote packages but never mutates your environment), so agents can safely auto-run it to vet a server before installing.
+  - **`outputSchema` + `structuredContent`** — the audit result is now declared and returned as a typed object (mirrors `AuditReport`: `totalScore`, `grade`, `mode`, `checks[]`, …), enabling reliable grade-gating (e.g. "only install if grade is A/B") without string-scraping.
+- Synced `server.json` version to the package version (was drifted at 0.1.3).
+
 ## 0.4.0
 
 - **Compare** (`mcp-scorecard compare a b c`): audit several targets, print a ranked side-by-side table.
