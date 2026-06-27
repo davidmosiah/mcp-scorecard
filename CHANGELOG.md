@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1 - 2026-06-27
+
+### Security
+
+- Pin transitive `hono` resolution to `4.12.27` via npm overrides, resolving production audit advisories while keeping the public CLI and MCP API unchanged.
+
 ## 0.5.0
 
 - **The `audit` MCP tool now ships agent-expanding metadata** (dogfooding our own checks):
