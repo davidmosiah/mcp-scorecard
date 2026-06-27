@@ -13,6 +13,8 @@
     "LICENSE",
     "CHANGELOG.md",
     "AGENTS.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
     "llms.txt"
   ],
   "scripts": {
@@ -38,6 +40,10 @@
   ],
   "author": "David Mosiah",
   "license": "MIT",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/davidmosiah"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.21.0",
     "ajv": "^8.17.1",
