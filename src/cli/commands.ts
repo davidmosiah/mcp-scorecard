@@ -49,9 +49,10 @@ Flags:
   --version        print version
   --help, -h       print this message
 
-Privacy: the probe sets MCP_PROBE=1 so MCP authors can detect an audit and
-skip auth-only side effects. Probe responses are NEVER persisted; only
-counts and field names are recorded. See the README for the security model.`;
+Privacy: the probe sets MCP_PROBE=1 on a minimal child env so MCP authors can
+detect an audit and skip auth-only side effects. Probe responses are NEVER
+persisted; only counts and field names are recorded. This is not a sandbox for
+untrusted packages; see the README for the security model.`;
 
 interface ParsedArgs {
   subject?: string;

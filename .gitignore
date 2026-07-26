@@ -17,3 +17,6 @@ tokens.json
 
 # MCP Registry local auth tokens
 .mcpregistry_*_token
+
+# Rascunho comercial: preservado no vault privado 00-workspace-index/Notes/
+OFFER-DRAFT.md

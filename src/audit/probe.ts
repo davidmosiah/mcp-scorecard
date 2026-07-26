@@ -7,15 +7,20 @@
  * the target.
  *
  * Privacy: we never log full responses to stdout/stderr; only counts and
- * field names. If a probe lands on a logged-in server, no user data leaks.
+ * field names. Untrusted targets should still be run inside an external
+ * sandbox when host-level side effects matter.
  */
 
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { PROBE_CLIENT_NAME, PROBE_ENV_FLAG, SERVER_VERSION } from '../constants.js';
 import type { ProbeSnapshot, ResolvedTarget, ToolSnapshot } from '../types.js';
 
 const PROBE_TIMEOUT_MS = 30_000;
+const ENV_ALLOWLIST = ['PATH', 'SystemRoot', 'WINDIR', 'COMSPEC', 'PATHEXT'] as const;
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -40,6 +45,26 @@ function findManifestTool(tools: ToolSnapshot[]): string | undefined {
   return tools.find((t) => /(^|_)agent_manifest$/.test(t.name))?.name;
 }
 
+export function buildProbeEnv(homeDir: string): Record<string, string> {
+  const env: Record<string, string> = {
+    [PROBE_ENV_FLAG]: '1',
+    CI: '1',
+    NO_COLOR: '1',
+    HOME: homeDir,
+    USERPROFILE: homeDir,
+    TMPDIR: homeDir,
+    TEMP: homeDir,
+    TMP: homeDir
+  };
+
+  for (const key of ENV_ALLOWLIST) {
+    const value = process.env[key];
+    if (typeof value === 'string') env[key] = value;
+  }
+
+  return env;
+}
+
 /**
  * Sanitize a probe response into counts + key names only. NEVER returns
  * nested values — strings/numbers/booleans/arrays are reduced to lengths
@@ -62,16 +87,13 @@ function sanitizeManifestResponse(raw: unknown): ProbeSnapshot['agentManifest'] 
 /**
  * Spawn the target MCP server and capture a snapshot.
  *
- * The transport inherits a sanitized env: the original env is passed
- * through (so the target finds node, paths, etc.) plus MCP_PROBE=1 so
- * authors can detect they are being audited and short-circuit auth.
+ * The transport receives a minimal env plus MCP_PROBE=1 so authors can
+ * detect they are being audited and short-circuit auth. We do not pass the
+ * caller's full environment to untrusted target code.
  */
 export async function probeTarget(target: ResolvedTarget): Promise<ProbeSnapshot> {
-  const env: Record<string, string> = {};
-  for (const [k, v] of Object.entries(process.env)) {
-    if (typeof v === 'string') env[k] = v;
-  }
-  env[PROBE_ENV_FLAG] = '1';
+  const probeHome = mkdtempSync(join(tmpdir(), 'mcp-scorecard-home-'));
+  const env = buildProbeEnv(probeHome);
 
   const transport = new StdioClientTransport({
     command: target.command,
@@ -168,6 +190,7 @@ export async function probeTarget(target: ResolvedTarget): Promise<ProbeSnapshot
     } catch {
       // already closed
     }
+    rmSync(probeHome, { recursive: true, force: true });
   }
 
   return {

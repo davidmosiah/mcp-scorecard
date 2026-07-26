@@ -1,6 +1,6 @@
 # mcp-scorecard
 
-> A CLI + MCP that grades **any MCP server's agent-readiness**. It probes a target over stdio, runs **10 checks** (each 0–10), and outputs a **0–100 score** with actionable fixes. Open source (MIT), local-first, zero credentials. Notably, the official `@modelcontextprotocol` reference servers score 34–44/100.
+> A CLI + MCP that grades **any MCP server's agent-readiness**. It probes a target, runs **22 checks** (each 0–10) — 10 over stdio for local/protocol quality, plus 12 security + web agent-readiness checks for hosted/remote targets — and outputs a **0–100 score** with actionable fixes. Open source (MIT), local-first, zero credentials. Notably, the official `@modelcontextprotocol` reference servers score 34–44/100.
 
 ## Use it (no auth, no API key)
 
@@ -10,9 +10,11 @@ npx -y mcp-scorecard <target>
 
 `<target>` can be a published npm package, a GitHub repo URL (auto-resolves to npm/local dist), or a local `dist/index.js`. Add `--json` for CI piping, `--min-score 80` to gate a build.
 
-## The 10 checks
+## The checks (22 total)
 
-manifest discoverability · tool naming · tool descriptions · schema validity · annotations · mutation gating · privacy modes · resources · agent manifest · smoke test.
+stdio / protocol (10): manifest discoverability · tool naming · tool descriptions · schema validity · annotations · mutation gating · privacy modes · resources · agent manifest · smoke test.
+
+hosted / remote (12): HTTPS/TLS · security headers · auth posture declared · OAuth discovery · no exposed secrets · CORS posture · llms.txt · MCP Server Card · Agent Skills index · API catalog (RFC 9727) · robots + AI signals · structured metadata. Full descriptions: https://mcp-scorecard.vercel.app/checks.html
 
 ## Links
 

@@ -1,5 +1,12 @@
 import assert from 'node:assert/strict';
+import { buildProbeEnv } from '../dist/audit/probe.js';
 import { applyProfile, isProfile } from '../dist/profiles.js';
+
+process.env.MCP_SCORECARD_SECRET_TEST = 'must-not-be-forwarded';
+const probeEnv = buildProbeEnv('/tmp/mcp-scorecard-test-home');
+assert.equal(probeEnv.MCP_PROBE, '1', 'probe env sets MCP_PROBE');
+assert.equal(probeEnv.HOME, '/tmp/mcp-scorecard-test-home', 'probe env uses isolated HOME');
+assert.equal(probeEnv.MCP_SCORECARD_SECRET_TEST, undefined, 'probe env does not forward arbitrary secrets');
 
 const rep = {
   target: { displayName: 'x' }, totalScore: 0, grade: 'F', mode: 'web', generatedAt: 'now', scorecardVersion: '0.4.0',
