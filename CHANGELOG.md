@@ -1,3 +1,10 @@
+## 0.5.3 - 2026-07-30
+
+### Fixed
+
+- Mutation-name patterns now include nutrition/alarm write verbs (`log_intake`, `log_water`, `bulk_log`, `remember`, `undo`, `snooze`, `dismiss`) so those tools are gated and not mis-scored as unannotated reads — without treating coach tools like `after_log_review` as mutations.
+- Gate hints also match the common field name `explicit_user_intent`.
+
 ## 0.5.2 - 2026-07-30
 
 ### Fixed

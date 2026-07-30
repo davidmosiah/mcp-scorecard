@@ -3,7 +3,7 @@
  * same string. Bumping this without updating package.json is intentional during
  * dev (keep src as source of truth); a release script can sync them.
  */
-export const SERVER_VERSION = '0.5.2';
+export const SERVER_VERSION = '0.5.3';
 
 /** Identifier used when the probe connects to a target MCP server. */
 export const PROBE_CLIENT_NAME = 'mcp-scorecard';
@@ -16,9 +16,12 @@ export const PROBE_ENV_FLAG = 'MCP_PROBE';
  * Patterns that imply a tool MUTATES state on the target system. We use these
  * to score mutation gating — if a tool name matches and the description does
  * not mention an explicit gate, it loses points.
+ *
+ * Nutrition/alarm write verbs use compound tokens (`log_intake`, `bulk_log`)
+ * so read tools like `after_log_review` are not misclassified as mutations.
  */
 export const MUTATION_PATTERNS: RegExp[] = [
-  /(^|_)(set|update|delete|create|pause|resume|enable|disable|cancel|publish|send|remove|add|insert|patch|put|post|exchange|revoke|grant|authorize|reset|clear|forget|destroy|wipe|logout|signout|sign_out)(_|$)/i
+  /(^|_)(set|update|delete|create|pause|resume|enable|disable|cancel|publish|send|remove|add|insert|patch|put|post|exchange|revoke|grant|authorize|reset|clear|forget|destroy|wipe|logout|signout|sign_out|log_intake|log_water|bulk_log|remember|undo|snooze|dismiss)(_|$)/i
 ];
 
 /**
@@ -29,6 +32,7 @@ export const MUTATION_GATE_HINTS = [
   'gated by',
   'requires explicit',
   'explicit user intent',
+  'explicit_user_intent',
   'allow_mutations',
   'dry-run',
   'dry_run',
