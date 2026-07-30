@@ -1,3 +1,9 @@
+## 0.5.4 - 2026-07-30
+
+### Fixed
+
+- Mutation patterns include `import`/`reimport` so export reimport tools are gated, not scored as unannotated reads.
+
 ## 0.5.3 - 2026-07-30
 
 ### Fixed
