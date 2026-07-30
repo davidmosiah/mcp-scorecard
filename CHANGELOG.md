@@ -1,3 +1,9 @@
+## 0.5.2 - 2026-07-30
+
+### Fixed
+
+- CLI resolves relative paths and package directories offline (not only absolute file paths), so local scoring of a repo dir works without going to npm.
+
 # Changelog
 
 ## Unreleased
