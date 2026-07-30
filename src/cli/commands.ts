@@ -8,12 +8,11 @@
  *   --help, -h        print usage
  */
 
-import { existsSync } from 'node:fs';
-import { isAbsolute } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { SERVER_VERSION } from '../constants.js';
 import { runAudit } from '../audit/runner.js';
 import { resolveGithubRepo } from '../resolvers/github-resolver.js';
-import { resolveLocal } from '../resolvers/local-resolver.js';
+import { isLocalSubject, resolveLocal } from '../resolvers/local-resolver.js';
 import { resolveNpmPackage } from '../resolvers/npm-resolver.js';
 import { runWebAudit } from '../audit/web/web-runner.js';
 
@@ -21,7 +20,6 @@ import { runWebAudit } from '../audit/web/web-runner.js';
 function isWebTarget(subject: string): boolean {
   return /^https?:\/\//.test(subject) && !/github\.com/.test(subject);
 }
-import { readFileSync } from 'node:fs';
 import type { AuditReport, ResolvedTarget } from '../types.js';
 import { applyProfile, isProfile } from '../profiles.js';
 import { renderBadge, renderBaseline, renderCompare, renderHtml, renderJson, renderMarkdown } from './output.js';
@@ -37,7 +35,7 @@ Subjects:
   npm-package            e.g. whoop-mcp-unofficial[@version]
   github-url             e.g. https://github.com/davidmosiah/whoop-mcp
   https://host           a HOSTED/remote MCP server or site (web security + agent-readiness audit)
-  /abs/path/dist/index.js  built MCP server entry
+  /abs/path/dist/index.js  built MCP server entry (or package dir / relative path)
 
 Flags:
   --json           emit structured JSON to stdout
@@ -96,7 +94,7 @@ function parseArgs(argv: string[]): ParsedArgs {
 
 function classifySubject(subject: string): 'github' | 'local' | 'npm' {
   if (/^https?:\/\/github\.com\//.test(subject) || /^github:/.test(subject)) return 'github';
-  if (isAbsolute(subject) && existsSync(subject)) return 'local';
+  if (isLocalSubject(subject)) return 'local';
   return 'npm';
 }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixes
+
+- Local subjects: relative paths and package directories resolve offline (`./dist/index.js`, package root via `bin`/`main`), matching the CLI docs for end-to-end local audits.
+
 ## 0.5.1 - 2026-06-27
 
 ### Security

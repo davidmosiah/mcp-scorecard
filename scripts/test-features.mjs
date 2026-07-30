@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
+import { dirname, resolve as pathResolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { applyProfile, isProfile } from '../dist/profiles.js';
+import { isLocalSubject, resolveLocal } from '../dist/resolvers/local-resolver.js';
 
 const rep = {
   target: { displayName: 'x' }, totalScore: 0, grade: 'F', mode: 'web', generatedAt: 'now', scorecardVersion: '0.4.0',
@@ -19,4 +22,18 @@ assert.equal(ar.checks.length, 2, 'agent-ready keeps 2');
 assert.equal(ar.totalScore, 100, 'agent-ready rescaled: 100');
 const all = applyProfile(rep, 'all');
 assert.equal(all.checks.length, 4, 'all keeps everything');
-console.log('features OK: applyProfile filters+rescales (security=50, agent-ready=100, all=4)');
+
+// Local path classification + package-dir bin resolution (offline CLI UX)
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkgRoot = pathResolve(__dirname, '..');
+const fixtureRel = 'tests/fixtures/good-mcp.mjs';
+assert.ok(isLocalSubject(fixtureRel), 'relative fixture path is local');
+assert.ok(isLocalSubject(pathResolve(pkgRoot, fixtureRel)), 'absolute fixture path is local');
+assert.ok(!isLocalSubject('whoop-mcp-unofficial'), 'bare npm name is not local');
+const fileTarget = resolveLocal(fixtureRel);
+assert.equal(fileTarget.args[0], pathResolve(pkgRoot, fixtureRel));
+const dirTarget = resolveLocal(pkgRoot);
+assert.ok(dirTarget.args[0].endsWith('dist/index.js'), 'package dir resolves bin entry');
+assert.equal(dirTarget.displayName, 'mcp-scorecard');
+
+console.log('features OK: applyProfile filters+rescales (security=50, agent-ready=100, all=4); local resolver relative+dir');

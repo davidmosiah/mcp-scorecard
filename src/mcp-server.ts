@@ -6,8 +6,6 @@
  * Uses the low-level Server + setRequestHandler API with a plain JSON-Schema
  * tool definition (no zod shape) to stay decoupled from the SDK's zod version.
  */
-import { existsSync } from 'node:fs';
-import { isAbsolute } from 'node:path';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -16,7 +14,7 @@ import type { AuditReport } from './types.js';
 import { runAudit } from './audit/runner.js';
 import { runWebAudit } from './audit/web/web-runner.js';
 import { resolveGithubRepo } from './resolvers/github-resolver.js';
-import { resolveLocal } from './resolvers/local-resolver.js';
+import { isLocalSubject, resolveLocal } from './resolvers/local-resolver.js';
 import { resolveNpmPackage } from './resolvers/npm-resolver.js';
 
 /**
@@ -69,7 +67,7 @@ async function auditTarget(target: string): Promise<AuditReport> {
   let resolved;
   if (/^https?:\/\/github\.com\//.test(target) || target.startsWith('github:')) {
     resolved = await resolveGithubRepo(target);
-  } else if (isAbsolute(target) && existsSync(target)) {
+  } else if (isLocalSubject(target)) {
     resolved = await resolveLocal(target);
   } else {
     resolved = await resolveNpmPackage(target);

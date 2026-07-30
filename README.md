@@ -26,8 +26,10 @@ npx -y mcp-scorecard whoop-mcp-unofficial
 # Audit a GitHub repo (auto-resolves to the published npm package, or local dist)
 npx -y mcp-scorecard https://github.com/davidmosiah/whoop-mcp
 
-# Audit a local build
+# Audit a local build (entry file or package directory)
 npx -y mcp-scorecard /Users/you/Desktop/my-mcp/dist/index.js
+npx -y mcp-scorecard ./my-mcp          # resolves package.json bin/main
+npx -y mcp-scorecard ./dist/index.js   # relative paths work offline
 
 # CI gate: fail the build if the score drops
 npx -y mcp-scorecard my-mcp --min-score 80
