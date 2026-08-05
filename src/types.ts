@@ -66,6 +66,7 @@ export interface ResolvedTarget {
 export type CheckId =
   | 'schema_validity'
   | 'tool_naming'
+  | 'dense_series_caps'
   | 'privacy_modes'
   | 'mutation_gating'
   | 'agent_manifest'

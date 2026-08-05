@@ -15,6 +15,7 @@ export interface CheckMeta {
 export const CHECK_META: Record<CheckId, CheckMeta> = {
   // --- stdio: protocol quality ---
   schema_validity: { label: 'Schema validity', category: 'quality', why: 'Agents reject or mis-call tools whose input schemas are invalid or missing.' },
+  dense_series_caps: { label: 'Dense series caps', category: 'agent-ready', why: 'Stream/series tools must advertise max_points/resolution caps (agent-safe-series/v1).' },
   tool_naming: { label: 'Tool naming', category: 'quality', why: 'Consistent snake_case verb_noun names make tools predictable for models to select.' },
   tool_descriptions: { label: 'Tool descriptions', category: 'quality', why: 'Rich descriptions are the only thing a model has to decide when/how to call a tool.' },
   annotations: { label: 'Annotations', category: 'quality', why: 'readOnly/destructive hints let agents reason about safety before calling.' },

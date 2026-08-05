@@ -1,3 +1,9 @@
+## 0.5.5 - 2026-08-05
+
+### Added
+- `dense_series_caps` agent-ready check: stream/series/intraday tools must document max_points/resolution (agent-safe-series/v1).
+
+
 ## 0.5.4 - 2026-07-30
 
 ### Fixed

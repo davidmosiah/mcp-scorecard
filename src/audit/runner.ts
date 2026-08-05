@@ -19,6 +19,7 @@ import { checkSchemaValidity } from './checks/schema-validity.js';
 import { checkSmokeTest } from './checks/smoke-test.js';
 import { checkToolDescriptions } from './checks/tool-descriptions.js';
 import { checkToolNaming } from './checks/tool-naming.js';
+import { checkDenseSeriesCaps } from './checks/dense-series-caps.js';
 import { probeTarget } from './probe.js';
 import { aggregateScore } from './scorer.js';
 
@@ -60,6 +61,7 @@ export async function runAudit(target: ResolvedTarget): Promise<AuditReport> {
   const checks: CheckResult[] = [
     safeRun('schema_validity', () => checkSchemaValidity(snapshot)),
     safeRun('tool_naming', () => checkToolNaming(snapshot)),
+    safeRun('dense_series_caps', () => checkDenseSeriesCaps(snapshot)),
     safeRun('privacy_modes', () => checkPrivacyModes(snapshot)),
     safeRun('mutation_gating', () => checkMutationGating(snapshot)),
     safeRun('agent_manifest', () => checkAgentManifest(snapshot)),
