@@ -24,11 +24,12 @@
     "dev": "tsx src/index.ts",
     "test:checks": "node scripts/test-checks.mjs",
     "test:self": "node scripts/smoke-self.mjs",
-    "test": "npm run typecheck && npm run build && npm run test:checks && npm run test:self && npm run test:web && npm run test:features",
+    "test": "npm run typecheck && npm run build && npm run test:dense-series && npm run test:checks && npm run test:self && npm run test:web && npm run test:features",
     "prepublishOnly": "npm test",
     "test:web": "node scripts/test-web.mjs",
     "test:features": "node scripts/test-features.mjs",
-    "gen:checks": "node scripts/gen-checks-page.mjs"
+    "gen:checks": "node scripts/gen-checks-page.mjs",
+    "test:dense-series": "node scripts/dense-series-caps-test.mjs"
   },
   "keywords": [
     "mcp",
