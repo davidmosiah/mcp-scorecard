@@ -1,7 +1,7 @@
 ## 0.5.6 - 2026-08-06
 
 ### Changed
-- `dense_series_caps` now requires both a hard cap signal (`max_points` in schema preferred) and a series contract marker (`contract_version` and/or `agent-safe-series/v1`).
+- `dense_series_caps` requires **schema** `max_points`/`maxPoints` (hard cap) separate from contract markers (`contract_version` and/or `agent-safe-series/v1` in description/schema). Contract description alone no longer scores as a hard cap.
 
 ## 0.5.5 - 2026-08-05
 

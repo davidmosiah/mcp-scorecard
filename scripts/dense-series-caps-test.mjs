@@ -1,5 +1,12 @@
 import assert from 'node:assert/strict';
-import { checkDenseSeriesCaps } from '../dist/audit/checks/dense-series-caps.js';
+import {
+  checkDenseSeriesCaps,
+  _denseSeriesCapHintForTests as CAP_HINT
+} from '../dist/audit/checks/dense-series-caps.js';
+
+// Contract text must NOT satisfy hard-cap regex (skeptic: no agent-safe-series in CAP).
+assert.equal(CAP_HINT.test('agent-safe-series/v1'), false);
+assert.equal(CAP_HINT.test('max_points hard cap'), true);
 
 const pass = checkDenseSeriesCaps({
   tools: [
@@ -12,16 +19,46 @@ const pass = checkDenseSeriesCaps({
 });
 assert.equal(pass.score, 10);
 
-const passDescOnly = checkDenseSeriesCaps({
+// Schema max_points + contract in description only — pass
+const passContractInDesc = checkDenseSeriesCaps({
   tools: [
     {
       name: 'y_heart_series',
-      description: 'agent-safe-series/v1 with max_points hard cap',
+      description: 'agent-safe-series/v1 dense series',
       inputSchema: { properties: { max_points: { type: 'number' } } }
     }
   ]
 });
-assert.equal(passDescOnly.score, 10);
+assert.equal(passContractInDesc.score, 10);
+
+// Empty schema + contract description only — MUST fail hard cap (inventory #19)
+const contractDescOnly = checkDenseSeriesCaps({
+  tools: [
+    {
+      name: 'w_activity_series',
+      description: 'agent-safe-series/v1',
+      inputSchema: {}
+    }
+  ]
+});
+assert.ok(contractDescOnly.score < 10, 'contract-only description must not pass hard cap');
+assert.ok(
+  contractDescOnly.details.some((d) => /missing hard cap.*max_points in inputSchema\.properties.*w_activity_series/.test(d)),
+  `expected hard-cap schema detail, got: ${JSON.stringify(contractDescOnly.details)}`
+);
+
+// Description mentions max_points but schema empty — still fail (schema required)
+const capInDescOnly = checkDenseSeriesCaps({
+  tools: [
+    {
+      name: 'v_stream_series',
+      description: 'returns series with max_points hard cap and agent-safe-series/v1',
+      inputSchema: {}
+    }
+  ]
+});
+assert.ok(capInDescOnly.score < 10, 'description-only max_points must not pass');
+assert.ok(capInDescOnly.details.some((d) => /missing hard cap/.test(d)));
 
 const fail = checkDenseSeriesCaps({
   tools: [{ name: 'x_get_streams', description: 'returns all samples', inputSchema: {} }]
@@ -44,7 +81,9 @@ console.log(
     ok: true,
     suite: 'dense-series-caps',
     pass: pass.score,
-    passDescOnly: passDescOnly.score,
+    passContractInDesc: passContractInDesc.score,
+    contractDescOnly: contractDescOnly.score,
+    capInDescOnly: capInDescOnly.score,
     fail: fail.score,
     missingContract: missingContract.score
   })

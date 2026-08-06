@@ -2,13 +2,17 @@
  * Check — Dense/stream-like tools must advertise hard caps and series contract
  * (agent-safe-series/v1 discipline).
  *
- * Prefer schema properties: `max_points` (hard cap) and contract markers
- * (`contract_version` property and/or `agent-safe-series` in description/schema).
+ * Hard cap (inventory #19): `max_points` / `maxPoints` must appear in
+ * **inputSchema.properties**. Description-only contract text does NOT count as a cap.
+ *
+ * Contract marker (inventory #18): `contract_version` in schema and/or
+ * `agent-safe-series` (incl. /vN) in description or schema — separate from hard cap.
  */
 import type { CheckResult, ProbeSnapshot } from '../../types.js';
 
 const DENSE_NAME = /(stream|series|intraday|continuous|sample|samples|ppi)/i;
-const CAP_HINT = /(max_points|resolution_seconds|maxPoints|point budget|agent-safe-series|hard cap|downsample)/i;
+/** Cap signals only — never agent-safe-series (that is the contract marker). */
+const CAP_HINT = /(max_points|maxPoints|resolution_seconds|point budget|hard cap|downsample)/i;
 const CONTRACT_HINT = /(contract_version|agent-safe-series\/v\d+|agent-safe-series)/i;
 
 function schemaProps(tool: { inputSchema?: unknown }): Record<string, unknown> {
@@ -16,12 +20,10 @@ function schemaProps(tool: { inputSchema?: unknown }): Record<string, unknown> {
   return schema?.properties ?? {};
 }
 
+/** Hard cap requires max_points/maxPoints on the input schema properties. */
 function hasHardCap(tool: { description?: string; inputSchema?: unknown }): boolean {
   const props = schemaProps(tool);
-  if (props.max_points != null || props.maxPoints != null) return true;
-  const desc = tool.description ?? '';
-  const schemaText = JSON.stringify(tool.inputSchema ?? {});
-  return CAP_HINT.test(desc) || CAP_HINT.test(schemaText);
+  return props.max_points != null || props.maxPoints != null;
 }
 
 function hasContractMarker(tool: { description?: string; inputSchema?: unknown }): boolean {
@@ -59,7 +61,7 @@ export function checkDenseSeriesCaps(snapshot: ProbeSnapshot): CheckResult {
       label: 'Dense series caps',
       score: 10,
       status: 'pass',
-      summary: `${dense.length} dense tool(s) document hard caps + series contract markers`,
+      summary: `${dense.length} dense tool(s) have schema max_points + series contract markers`,
       details: dense.map((t) => t.name),
       fixes: []
     };
@@ -70,7 +72,7 @@ export function checkDenseSeriesCaps(snapshot: ProbeSnapshot): CheckResult {
   const ratio = (issues - failed) / issues;
   const score = ratio >= 0.75 ? 7 : ratio >= 0.5 ? 5 : 0;
   const details = [
-    ...missingCap.map((n) => `missing hard cap (max_points in schema or description): ${n}`),
+    ...missingCap.map((n) => `missing hard cap (max_points in inputSchema.properties): ${n}`),
     ...missingContract.map((n) => `missing contract_version / agent-safe-series marker: ${n}`)
   ];
   return {
@@ -81,8 +83,11 @@ export function checkDenseSeriesCaps(snapshot: ProbeSnapshot): CheckResult {
     summary: `${failed} dense-series gaps across ${dense.length} tool(s)`,
     details,
     fixes: [
-      'For stream/series tools: put max_points in inputSchema.properties (hard cap).',
-      'Advertise agent-safe-series/v1 and/or contract_version in description or schema (agent-safe-series/v1).'
+      'For stream/series tools: put max_points in inputSchema.properties (required hard cap).',
+      'Advertise agent-safe-series/v1 and/or contract_version in description or schema (separate from the hard cap).'
     ]
   };
 }
+
+// CAP_HINT kept for documentation/tests that assert cap language is distinct from contract.
+export const _denseSeriesCapHintForTests = CAP_HINT;
