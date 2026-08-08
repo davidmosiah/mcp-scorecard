@@ -2,7 +2,7 @@
   "name": "mcp-scorecard",
   "version": "0.5.6",
   "mcpName": "io.github.davidmosiah/mcp-scorecard",
-  "description": "Grade any MCP server's agent-readiness in one command \u2014 stdio (10 protocol checks) AND hosted/remote servers (10 security + web agent-readiness checks). Open source, local-first, no credentials.",
+  "description": "Grade any MCP server's agent-readiness in one command — stdio (10 protocol checks) AND hosted/remote servers (10 security + web agent-readiness checks). Open source, local-first, no credentials.",
   "type": "module",
   "bin": {
     "mcp-scorecard": "dist/index.js"
@@ -48,6 +48,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.21.0",
     "ajv": "^8.17.1",
+    "ip-address": "^10.4.0",
     "zod": "^4.4.1"
   },
   "devDependencies": {
