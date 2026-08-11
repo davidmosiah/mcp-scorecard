@@ -30,6 +30,11 @@
 
 # Changelog
 
+## 0.5.7
+
+- Security: raise `hono` override to **4.13.1** (clears moderate MCP SDK transitive advisories); `@hono/node-server@2.1.0`.
+
+
 ## Unreleased
 
 ### Fixes
