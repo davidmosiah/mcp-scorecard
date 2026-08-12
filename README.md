@@ -232,7 +232,7 @@ production agent.
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE). [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
