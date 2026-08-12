@@ -109,7 +109,12 @@ async function resolveSubject(subject: string): Promise<ResolvedTarget> {
 /** Audit one subject — web mode for hosted URLs, stdio mode otherwise. */
 async function auditSubject(subject: string): Promise<AuditReport> {
   if (isWebTarget(subject)) return runWebAudit(subject);
-  return runAudit(await resolveSubject(subject));
+  const target = await resolveSubject(subject);
+  try {
+    return await runAudit(target);
+  } finally {
+    target.cleanup?.();
+  }
 }
 
 export async function run(argv: string[]): Promise<number> {

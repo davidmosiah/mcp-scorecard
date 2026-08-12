@@ -8,7 +8,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { join, resolve as pathResolve } from 'node:path';
 import type { ResolvedTarget } from '../types.js';
 import { resolveNpmPackage } from './npm-resolver.js';
@@ -29,8 +29,10 @@ export async function resolveGithubRepo(url: string): Promise<ResolvedTarget> {
 
   if (!existsSync(SCRATCH_ROOT)) mkdirSync(SCRATCH_ROOT, { recursive: true });
   const dest = mkdtempSync(join(SCRATCH_ROOT, 'gh-'));
+  const cleanup = () => rmSync(dest, { recursive: true, force: true });
   const cloneDir = join(dest, parsed.repo);
 
+  try {
   const gh = spawnSync('gh', ['repo', 'clone', `${parsed.owner}/${parsed.repo}`, cloneDir, '--', '--depth=1'], {
     encoding: 'utf8'
   });
@@ -48,7 +50,13 @@ export async function resolveGithubRepo(url: string): Promise<ResolvedTarget> {
   // pull via `npx -y <name>`. Falls back to local dist if npm pack fails.
   if (typeof pkg.name === 'string') {
     try {
-      return await resolveNpmPackage(pkg.name as string);
+      const resolved = await resolveNpmPackage(pkg.name as string);
+      const cleanupNpm = resolved.cleanup;
+      resolved.cleanup = () => {
+        cleanupNpm?.();
+        cleanup();
+      };
+      return resolved;
     } catch {
       // package not published — try local dist
     }
@@ -68,6 +76,11 @@ export async function resolveGithubRepo(url: string): Promise<ResolvedTarget> {
     command: 'node',
     args: [localBin],
     packageDir: cloneDir,
-    packageJson: pkg
+    packageJson: pkg,
+    cleanup
   };
+  } catch (err) {
+    cleanup();
+    throw err;
+  }
 }

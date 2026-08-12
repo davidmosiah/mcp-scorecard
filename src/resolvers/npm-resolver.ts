@@ -9,7 +9,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve as pathResolve } from 'node:path';
 import type { ResolvedTarget } from '../types.js';
@@ -44,7 +44,9 @@ function pickBin(pkg: Record<string, unknown>): string | undefined {
 export async function resolveNpmPackage(spec: string): Promise<ResolvedTarget> {
   const scratch = ensureScratchRoot();
   const dest = mkdtempSync(join(scratch, 'probe-'));
+  const cleanup = () => rmSync(dest, { recursive: true, force: true });
 
+  try {
   const pack = spawnSync('npm', ['pack', spec, '--pack-destination', dest, '--no-fund', '--no-audit'], {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe']
@@ -108,6 +110,11 @@ export async function resolveNpmPackage(spec: string): Promise<ResolvedTarget> {
     command: 'node',
     args: [binAbs],
     packageDir: extractDir,
-    packageJson: pkg
+    packageJson: pkg,
+    cleanup
   };
+  } catch (err) {
+    cleanup();
+    throw err;
+  }
 }

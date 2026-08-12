@@ -73,7 +73,11 @@ async function auditTarget(target: string): Promise<AuditReport> {
   } else {
     resolved = await resolveNpmPackage(target);
   }
-  return runAudit(resolved);
+  try {
+    return await runAudit(resolved);
+  } finally {
+    resolved.cleanup?.();
+  }
 }
 
 export function createScorecardServer(): Server {

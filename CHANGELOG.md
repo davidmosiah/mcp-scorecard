@@ -1,3 +1,8 @@
+## 0.5.10 - 2026-08-12
+
+### Fixed
+- Remove resolver-owned npm and GitHub scratch directories after every audit, including failed resolutions. Large batch runs no longer exhaust runner inodes under `/tmp/scorecard-work`.
+
 ## 0.5.9 - 2026-08-12
 
 ### Added

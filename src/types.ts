@@ -62,6 +62,8 @@ export interface ResolvedTarget {
   packageDir: string;
   /** package.json contents, if any. */
   packageJson?: Record<string, unknown>;
+  /** Release resolver-owned temporary files after the audit finishes. */
+  cleanup?: () => void;
 }
 
 export type CheckId =
