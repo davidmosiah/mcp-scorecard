@@ -7,6 +7,7 @@ export interface ToolSnapshot {
   name: string;
   description?: string;
   inputSchema?: unknown;
+  outputSchema?: unknown;
   annotations?: Record<string, unknown>;
 }
 

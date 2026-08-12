@@ -19,7 +19,7 @@ const pass = checkDenseSeriesCaps({
 });
 assert.equal(pass.score, 10);
 
-// Schema max_points + contract in description only — pass
+// Schema max_points + contract in description only — FAIL (OSS-300 #13)
 const passContractInDesc = checkDenseSeriesCaps({
   tools: [
     {
@@ -29,7 +29,19 @@ const passContractInDesc = checkDenseSeriesCaps({
     }
   ]
 });
-assert.equal(passContractInDesc.score, 10);
+assert.ok(passContractInDesc.score < 10, 'description-only contract_version must fail');
+
+const passOutputContract = checkDenseSeriesCaps({
+  tools: [
+    {
+      name: 'y_heart_series',
+      description: 'dense series',
+      inputSchema: { properties: { max_points: { type: 'number' } } },
+      outputSchema: { properties: { contract_version: { const: 'agent-safe-series/v1' } } }
+    }
+  ]
+});
+assert.equal(passOutputContract.score, 10);
 
 // Empty schema + contract description only — MUST fail hard cap (inventory #19)
 const contractDescOnly = checkDenseSeriesCaps({
@@ -82,6 +94,7 @@ console.log(
     suite: 'dense-series-caps',
     pass: pass.score,
     passContractInDesc: passContractInDesc.score,
+    passOutputContract: passOutputContract.score,
     contractDescOnly: contractDescOnly.score,
     capInDescOnly: capInDescOnly.score,
     fail: fail.score,

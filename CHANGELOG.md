@@ -1,3 +1,8 @@
+## 0.5.8 - 2026-08-12
+
+### Changed
+- `dense_series_caps`: `contract_version` must be a **schema property** on `outputSchema` or `inputSchema`. Description-only `agent-safe-series/v1` no longer counts (OSS-300 #13).
+
 ## 0.5.6 - 2026-08-06
 
 ### Changed
