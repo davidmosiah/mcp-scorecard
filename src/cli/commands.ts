@@ -28,7 +28,8 @@ const USAGE = `mcp-scorecard v${SERVER_VERSION}
 
 Usage:
   mcp-scorecard <subject> [--json|--badge|--html] [--profile P] [--baseline f.json] [--min-score N]
-  mcp-scorecard serve            run AS an MCP server (agents can call the 'audit' tool)
+  mcp-scorecard serve            run AS an MCP server over stdio (agents can call the 'audit' tool)
+  mcp-scorecard serve --http     same server on Streamable HTTP (v2 stateless, loopback /mcp)
   mcp-scorecard compare a b c    audit several subjects, print a side-by-side table
 
 Subjects:
@@ -115,7 +116,8 @@ export async function run(argv: string[]): Promise<number> {
   // `serve` → run mcp-scorecard itself AS an MCP server (agents call the audit tool).
   if (argv[0] === 'serve') {
     const { serve } = await import('../mcp-server.js');
-    await serve();
+    const http = argv.includes('--http') || process.env.MCP_SCORECARD_TRANSPORT === 'http';
+    await serve({ transport: http ? 'http' : 'stdio' });
     // Keep the process alive for the stdio transport (the CLI entry would
     // otherwise process.exit() as soon as run() resolves).
     await new Promise<void>(() => {});

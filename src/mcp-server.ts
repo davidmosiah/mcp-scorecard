@@ -9,7 +9,8 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { SERVER_VERSION } from './constants.js';
+import { SERVER_NAME, SERVER_VERSION } from './constants.js';
+import { listenHttpV2 } from './http-v2.js';
 import type { AuditReport } from './types.js';
 import { runAudit } from './audit/runner.js';
 import { runWebAudit } from './audit/web/web-runner.js';
@@ -75,9 +76,9 @@ async function auditTarget(target: string): Promise<AuditReport> {
   return runAudit(resolved);
 }
 
-export async function serve(): Promise<void> {
+export function createScorecardServer(): Server {
   const server = new Server(
-    { name: 'mcp-scorecard', version: SERVER_VERSION },
+    { name: SERVER_NAME, version: SERVER_VERSION },
     { capabilities: { tools: {} } }
   );
 
@@ -126,6 +127,25 @@ export async function serve(): Promise<void> {
     }
   });
 
+  return server;
+}
+
+export async function serve(options?: { transport?: "stdio" | "http" }): Promise<void> {
+  const transport = options?.transport ?? "stdio";
+  if (transport === "http") {
+    const host = process.env.MCP_SCORECARD_HOST ?? "127.0.0.1";
+    const port = Number(process.env.MCP_SCORECARD_PORT ?? 3000);
+    const { url } = await listenHttpV2({
+      name: SERVER_NAME,
+      version: SERVER_VERSION,
+      createServer: createScorecardServer,
+      host,
+      port
+    });
+    console.error(`mcp-scorecard MCP server v${SERVER_VERSION} running (http v2 stateless) — ${url}/mcp`);
+    return;
+  }
+  const server = createScorecardServer();
   await server.connect(new StdioServerTransport());
   console.error(`mcp-scorecard MCP server v${SERVER_VERSION} running (stdio) — tool: audit`);
 }

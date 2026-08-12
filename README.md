@@ -36,7 +36,17 @@ npx -y mcp-scorecard my-mcp --min-score 80
 
 # Structured JSON for piping into your own tooling
 npx -y mcp-scorecard my-mcp --json
+
+# Run scorecard itself as an MCP server (stdio default)
+npx -y mcp-scorecard serve
+
+# Same server on Streamable HTTP — v2 stateless, loopback only
+npx -y mcp-scorecard serve --http
+# GET  http://127.0.0.1:3000/health
+# POST http://127.0.0.1:3000/mcp   (sessionless)
 ```
+
+Env for HTTP: `MCP_SCORECARD_HOST`, `MCP_SCORECARD_PORT`, `MCP_SCORECARD_TRANSPORT=http`.
 
 ## Demo
 

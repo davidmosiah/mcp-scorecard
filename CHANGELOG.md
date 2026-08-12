@@ -1,3 +1,8 @@
+## 0.5.9 - 2026-08-12
+
+### Added
+- `mcp-scorecard serve --http` — Streamable HTTP v2 stateless (`POST /mcp`, `GET /health`, no session id, loopback). Stdio remains the default.
+
 ## 0.5.8 - 2026-08-12
 
 ### Changed
