@@ -61,6 +61,32 @@ const AUDIT_OUTPUT_SCHEMA = {
   required: ['target', 'totalScore', 'grade', 'mode', 'checks', 'generatedAt', 'scorecardVersion']
 };
 
+/** Same handler the MCP `audit` tool and CLI `call audit --json` share. */
+export async function runAuditCall(args: Record<string, unknown>): Promise<{
+  isError: boolean;
+  text: string;
+  structuredContent?: AuditReport;
+}> {
+  const target = String(args.target ?? '').trim();
+  if (!target) {
+    return { isError: true, text: 'missing required argument: target' };
+  }
+  try {
+    const report = await auditTarget(target);
+    const summary = `${report.target.displayName}: ${report.totalScore}/100 (grade ${report.grade}, ${report.mode} mode)`;
+    return {
+      isError: false,
+      text: `${summary}\n\n${JSON.stringify(report, null, 2)}`,
+      structuredContent: report
+    };
+  } catch (err) {
+    return {
+      isError: true,
+      text: `audit failed for "${target}": ${err instanceof Error ? err.message : String(err)}`
+    };
+  }
+}
+
 async function auditTarget(target: string): Promise<AuditReport> {
   if (/^https?:\/\//.test(target) && !/github\.com/.test(target)) {
     return runWebAudit(target);
@@ -112,23 +138,14 @@ export function createScorecardServer(): Server {
     if (req.params.name !== 'audit') {
       return { content: [{ type: 'text', text: `unknown tool: ${req.params.name}` }], isError: true };
     }
-    const target = String((req.params.arguments as Record<string, unknown> | undefined)?.target ?? '').trim();
-    if (!target) {
-      return { content: [{ type: 'text', text: 'missing required argument: target' }], isError: true };
+    const result = await runAuditCall((req.params.arguments as Record<string, unknown> | undefined) ?? {});
+    if (result.isError) {
+      return { content: [{ type: 'text', text: result.text }], isError: true };
     }
-    try {
-      const report = await auditTarget(target);
-      const summary = `${report.target.displayName}: ${report.totalScore}/100 (grade ${report.grade}, ${report.mode} mode)`;
-      return {
-        content: [{ type: 'text', text: `${summary}\n\n${JSON.stringify(report, null, 2)}` }],
-        structuredContent: report as unknown as Record<string, unknown>
-      };
-    } catch (err) {
-      return {
-        content: [{ type: 'text', text: `audit failed for "${target}": ${err instanceof Error ? err.message : String(err)}` }],
-        isError: true
-      };
-    }
+    return {
+      content: [{ type: 'text', text: result.text }],
+      structuredContent: result.structuredContent as unknown as Record<string, unknown>
+    };
   });
 
   return server;

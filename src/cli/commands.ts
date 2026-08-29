@@ -28,6 +28,7 @@ const USAGE = `mcp-scorecard v${SERVER_VERSION}
 
 Usage:
   mcp-scorecard <subject> [--json|--badge|--html] [--profile P] [--baseline f.json] [--min-score N]
+  mcp-scorecard call audit --json '{"target":"<npm|github|local|https>"}'
   mcp-scorecard serve            run AS an MCP server over stdio (agents can call the 'audit' tool)
   mcp-scorecard serve --http     same server on Streamable HTTP (v2 stateless, loopback /mcp)
   mcp-scorecard compare a b c    audit several subjects, print a side-by-side table
@@ -124,7 +125,34 @@ export async function run(argv: string[]): Promise<number> {
       process.stderr.write(`Unknown tool: ${tool || ''}\nTools: audit\n`);
       return 1;
     }
-    return run(argv.slice(2));
+    const jsonIdx = argv.indexOf('--json');
+    let input: Record<string, unknown> = {};
+    if (jsonIdx >= 0) {
+      const raw = argv[jsonIdx + 1];
+      if (!raw || raw.startsWith('--')) {
+        process.stderr.write('--json requires an object string\n');
+        return 1;
+      }
+      try {
+        const parsed = JSON.parse(raw) as unknown;
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          process.stderr.write('--json requires an object string\n');
+          return 1;
+        }
+        input = parsed as Record<string, unknown>;
+      } catch (err) {
+        process.stderr.write(`--json is not valid JSON: ${err instanceof Error ? err.message : String(err)}\n`);
+        return 1;
+      }
+    }
+    const { runAuditCall } = await import('../mcp-server.js');
+    const result = await runAuditCall(input);
+    if (result.isError || !result.structuredContent) {
+      process.stderr.write(`${result.text}\n`);
+      return 1;
+    }
+    process.stdout.write(`${JSON.stringify(result.structuredContent, null, 2)}\n`);
+    return 0;
   }
   // `serve` → run mcp-scorecard itself AS an MCP server (agents call the audit tool).
   if (argv[0] === 'serve') {

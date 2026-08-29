@@ -1,3 +1,7 @@
+## 0.5.12 - 2026-08-29
+
+`call audit --json` now takes the MCP `audit` arguments (`target`), not an npm subject. Empty `{}` is missing-target, same as the MCP tool.
+
 ## 0.5.11 - 2026-08-29
 
 Skill layer ships in-package (`skill/SKILL.md`). MCP tools or `call <tool>`.
