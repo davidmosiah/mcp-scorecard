@@ -1,6 +1,6 @@
 {
   "name": "mcp-scorecard",
-  "version": "0.5.10",
+  "version": "0.5.11",
   "mcpName": "io.github.davidmosiah/mcp-scorecard",
   "description": "Grade any MCP server's agent-readiness in one command \u2014 stdio (10 protocol checks) AND hosted/remote servers (10 security + web agent-readiness checks). Open source, local-first, no credentials.",
   "type": "module",
@@ -15,7 +15,8 @@
     "AGENTS.md",
     "SECURITY.md",
     "CONTRIBUTING.md",
-    "llms.txt"
+    "llms.txt",
+    "skill"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -24,14 +25,15 @@
     "dev": "tsx src/index.ts",
     "test:checks": "node scripts/test-checks.mjs",
     "test:self": "node scripts/smoke-self.mjs",
-    "test": "npm run typecheck && npm run build && npm run test:dense-series && npm run test:checks && npm run test:self && npm run test:web && npm run test:features && npm run test:http-v2 && npm run test:scratch-cleanup",
+    "test": "npm run typecheck && npm run build && npm run test:dense-series && npm run test:checks && npm run test:self && npm run test:web && npm run test:features && npm run test:http-v2 && npm run test:scratch-cleanup && npm run test:skill-surface",
     "test:http-v2": "node scripts/http-v2-test.mjs",
     "prepublishOnly": "npm test",
     "test:web": "node scripts/test-web.mjs",
     "test:features": "node scripts/test-features.mjs",
     "gen:checks": "node scripts/gen-checks-page.mjs",
     "test:dense-series": "node scripts/dense-series-caps-test.mjs",
-    "test:scratch-cleanup": "node scripts/scratch-cleanup-test.mjs"
+    "test:scratch-cleanup": "node scripts/scratch-cleanup-test.mjs",
+    "test:skill-surface": "node scripts/test-skill-surface.mjs"
   },
   "keywords": [
     "mcp",

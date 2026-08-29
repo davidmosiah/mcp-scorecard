@@ -118,6 +118,14 @@ async function auditSubject(subject: string): Promise<AuditReport> {
 }
 
 export async function run(argv: string[]): Promise<number> {
+  if (argv[0] === 'call') {
+    const tool = argv[1];
+    if (tool !== 'audit') {
+      process.stderr.write(`Unknown tool: ${tool || ''}\nTools: audit\n`);
+      return 1;
+    }
+    return run(argv.slice(2));
+  }
   // `serve` → run mcp-scorecard itself AS an MCP server (agents call the audit tool).
   if (argv[0] === 'serve') {
     const { serve } = await import('../mcp-server.js');

@@ -1,3 +1,7 @@
+## 0.5.11 - 2026-08-29
+
+Skill layer ships in-package (`skill/SKILL.md`). MCP tools or `call <tool>`.
+
 ## 0.5.10 - 2026-08-12
 
 ### Fixed

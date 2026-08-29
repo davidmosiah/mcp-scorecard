@@ -4,7 +4,7 @@
  * dev (keep src as source of truth); a release script can sync them.
  */
 export const SERVER_NAME = "mcp-scorecard";
-export const SERVER_VERSION = "0.5.10";
+export const SERVER_VERSION = "0.5.11";
 
 /** Identifier used when the probe connects to a target MCP server. */
 export const PROBE_CLIENT_NAME = 'mcp-scorecard';
