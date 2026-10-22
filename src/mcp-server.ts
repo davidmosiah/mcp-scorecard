@@ -117,7 +117,7 @@ export function createScorecardServer(): Server {
       {
         name: 'audit',
         description:
-          "Grade an MCP server's agent-readiness and security. Accepts an npm package name, a GitHub repo URL, a local dist path (→ stdio protocol-quality checks), or a hosted https:// URL (→ web security + agent-readiness checks). Returns a 0–100 score, an A–F grade, itemized checks, and actionable fixes.",
+          "Grade an MCP server's agent-readiness and security. Accepts an npm package name, a GitHub repo URL, a local dist path (→ stdio protocol-quality checks), or a hosted https:// URL (→ web security + agent-readiness checks). Stdio targets execute code as the current OS user and may have side effects; only audit trusted code or use an isolated environment. Returns a 0–100 score, an A–F grade, itemized checks, and actionable fixes.",
         inputSchema: {
           type: 'object',
           properties: {
@@ -128,7 +128,7 @@ export function createScorecardServer(): Server {
           },
           required: ['target']
         },
-        annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
+        annotations: { readOnlyHint: false, idempotentHint: false, openWorldHint: true },
         outputSchema: AUDIT_OUTPUT_SCHEMA
       }
     ]

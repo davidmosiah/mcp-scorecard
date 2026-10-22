@@ -7,7 +7,8 @@
  * the target.
  *
  * Privacy: we never log full responses to stdout/stderr; only counts and
- * field names. If a probe lands on a logged-in server, no user data leaks.
+ * field names. The target still runs as the current OS user; this is not a
+ * sandbox or a guarantee against a target's own data access or side effects.
  */
 
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
@@ -62,21 +63,16 @@ function sanitizeManifestResponse(raw: unknown): ProbeSnapshot['agentManifest'] 
 /**
  * Spawn the target MCP server and capture a snapshot.
  *
- * The transport inherits a sanitized env: the original env is passed
- * through (so the target finds node, paths, etc.) plus MCP_PROBE=1 so
- * authors can detect they are being audited and short-circuit auth.
+ * The SDK supplies its platform-specific runtime environment allowlist.
+ * Add only MCP_PROBE=1: passing process.env here would override that boundary
+ * with shell credentials, proxy settings, and code-loading configuration.
+ * MCP_PROBE is an author hook, not an enforcement mechanism.
  */
 export async function probeTarget(target: ResolvedTarget): Promise<ProbeSnapshot> {
-  const env: Record<string, string> = {};
-  for (const [k, v] of Object.entries(process.env)) {
-    if (typeof v === 'string') env[k] = v;
-  }
-  env[PROBE_ENV_FLAG] = '1';
-
   const transport = new StdioClientTransport({
     command: target.command,
     args: target.args,
-    env,
+    env: { [PROBE_ENV_FLAG]: '1' },
     cwd: target.packageDir
   });
 
