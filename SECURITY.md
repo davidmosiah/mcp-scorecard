@@ -11,6 +11,14 @@ internal URLs or local secrets into public issues or pull requests.
 secrets. If a target server needs credentials merely to list tools, it should
 detect `MCP_PROBE=1` and return its manifest safely.
 
+The stdio transport receives only `MCP_PROBE=1` from the probe, in addition to
+the MCP SDK's platform-specific runtime allowlist. Arbitrary shell variables
+such as API tokens, auth sockets, proxy settings and `NODE_OPTIONS` are not
+forwarded. This reduces ambient authority but is not process isolation: target
+code runs as the current OS user, may read files or OS credential stores, use
+the network, and have side effects. Audit trusted targets or use a separate
+isolated environment. `MCP_PROBE` is a cooperative hook, not a sandbox.
+
 For private reports, contact:
 
 ```text
