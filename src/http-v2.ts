@@ -6,6 +6,8 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 
+import { HttpBodyError, readJsonBody } from "./http-body.js";
+
 export type HttpV2Options = {
   name: string;
   version: string;
@@ -13,25 +15,6 @@ export type HttpV2Options = {
   host?: string;
   port?: number;
 };
-
-function readJsonBody(req: IncomingMessage): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    req.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
-    req.on("end", () => {
-      if (chunks.length === 0) {
-        resolve(undefined);
-        return;
-      }
-      try {
-        resolve(JSON.parse(Buffer.concat(chunks).toString("utf8")));
-      } catch (error) {
-        reject(error);
-      }
-    });
-    req.on("error", reject);
-  });
-}
 
 export async function handleHttpV2Request(
   options: HttpV2Options,
@@ -73,6 +56,13 @@ export function listenHttpV2(options: HttpV2Options): Promise<{ url: string; clo
         await handleHttpV2Request({ ...options, host }, req, res, body);
       };
       run().catch((error) => {
+        if (error instanceof HttpBodyError) {
+          if (!res.headersSent && !res.destroyed) {
+            res.writeHead(error.status, { "content-type": "application/json", connection: "close" });
+            res.end(JSON.stringify({ error: error.message }), () => req.destroy());
+          }
+          return;
+        }
         console.error("MCP HTTP request failed:", error);
         if (!res.headersSent) {
           res.writeHead(500, { "content-type": "application/json" });
