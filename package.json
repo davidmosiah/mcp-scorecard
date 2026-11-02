@@ -25,7 +25,7 @@
     "dev": "tsx src/index.ts",
     "test:checks": "node scripts/test-checks.mjs",
     "test:self": "node scripts/smoke-self.mjs",
-    "test": "npm run typecheck && npm run build && npm run test:probe-env && npm run test:dense-series && npm run test:checks && npm run test:self && npm run test:web && npm run test:features && npm run test:http-v2 && npm run test:scratch-cleanup && npm run test:skill-surface",
+    "test": "npm run typecheck && npm run build && npm run test:probe-env && npm run test:dense-series && npm run test:checks && npm run test:self && npm run test:web && npm run test:features && npm run test:http-v2 && npm run test:scratch-cleanup && npm run test:skill-surface && npm run test:http-body && npm run test:schema-dialects",
     "test:probe-env": "node --experimental-vm-modules scripts/probe-env-test.mjs",
     "test:http-v2": "node scripts/http-v2-test.mjs",
     "prepublishOnly": "npm test",
@@ -34,7 +34,9 @@
     "gen:checks": "node scripts/gen-checks-page.mjs",
     "test:dense-series": "node scripts/dense-series-caps-test.mjs",
     "test:scratch-cleanup": "node scripts/scratch-cleanup-test.mjs",
-    "test:skill-surface": "node scripts/test-skill-surface.mjs"
+    "test:skill-surface": "node scripts/test-skill-surface.mjs",
+    "test:http-body": "node scripts/test-http-body.mjs && node scripts/test-http-body-integration.mjs",
+    "test:schema-dialects": "node scripts/test-schema-dialects.mjs"
   },
   "keywords": [
     "mcp",
@@ -51,10 +53,10 @@
     "url": "https://github.com/sponsors/davidmosiah"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.21.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "ajv": "^8.17.1",
-    "ip-address": "^10.4.0",
-    "zod": "^4.4.1"
+    "ip-address": "^10.7.4",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -79,6 +81,6 @@
   "main": "dist/index.js",
   "overrides": {
     "esbuild": "0.28.1",
-    "@hono/node-server": "2.1.0"
+    "@hono/node-server": "2.1.3"
   }
 }

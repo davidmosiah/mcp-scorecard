@@ -1,5 +1,9 @@
 ## 0.5.12 - 2026-08-29
 
+## Unreleased
+
+- Validate tool input schemas against their declared JSON Schema dialect (draft-07, 2019-09, or 2020-12), rejecting unsupported dialects and malformed schemas without changing scoring weights.
+
 `call audit --json` now takes the MCP `audit` arguments (`target`), not an npm subject. Empty `{}` is missing-target, same as the MCP tool.
 
 ## 0.5.11 - 2026-08-29
