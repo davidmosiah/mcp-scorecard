@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "mcp-scorecard": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-scorecard@0.5.12",
+        "serve"
+      ],
+      "cwd": "${PLUGIN_DATA}"
+    }
+  }
+}
