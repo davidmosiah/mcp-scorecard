@@ -6,7 +6,7 @@ description: >-
 
 # MCP Scorecard
 
-MCP server `mcp-scorecard` from the `mcp-scorecard@0.5.12` npm package, run locally through `npx`. It reads a 0-100 security, quality and agent-readiness score with per-check findings for any MCP server. Data source: it audits the subject the user names: an npm package or GitHub repo is downloaded and started locally to probe its MCP surface; an https URL is probed remotely.
+MCP server `mcp-scorecard` from the `mcp-scorecard@0.5.13` npm package, run locally through `npx`. It reads a 0-100 security, quality and agent-readiness score with per-check findings for any MCP server. Data source: it audits the subject the user names: an npm package or GitHub repo is downloaded and started locally to probe its MCP surface; an https URL is probed remotely.
 
 ## Workflow
 
