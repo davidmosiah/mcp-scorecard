@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "mcp-scorecard",
-  "version": "0.5.12",
+  "version": "0.5.13",
   "description": "Score any MCP server for security, quality and agent-readiness (0-100, per-check findings) with the mcp-scorecard MCP server.",
   "author": {
     "name": "David Mosiah",
