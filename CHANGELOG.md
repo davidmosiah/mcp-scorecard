@@ -1,8 +1,14 @@
+## 0.5.13 - 2026-11-05
+
+### Security and compatibility
+
+- Restrict stdio audit targets to the MCP SDK runtime environment allowlist plus `MCP_PROBE=1`, without forwarding arbitrary shell credentials or code-loading configuration.
+- Mark the audit tool as potentially mutating and non-idempotent: stdio targets execute code as the current OS user. Use trusted targets or an isolated environment; the probe is not a sandbox.
+- Bound retained HTTP JSON bodies to 1 MiB, reject compressed bodies and return explicit malformed/oversized-body errors.
+- Validate declared draft-07, 2019-09 and 2020-12 JSON Schema dialects with matching Ajv validators, rejecting unsupported dialects without changing scoring weights.
+- Distribute the merged MCP SDK, ip-address and transitive dependency security updates.
+
 ## 0.5.12 - 2026-08-29
-
-## Unreleased
-
-- Validate tool input schemas against their declared JSON Schema dialect (draft-07, 2019-09, or 2020-12), rejecting unsupported dialects and malformed schemas without changing scoring weights.
 
 `call audit --json` now takes the MCP `audit` arguments (`target`), not an npm subject. Empty `{}` is missing-target, same as the MCP tool.
 

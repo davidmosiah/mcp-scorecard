@@ -6,12 +6,12 @@
     "url": "https://github.com/davidmosiah/mcp-scorecard",
     "source": "github"
   },
-  "version": "0.5.12",
+  "version": "0.5.13",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "mcp-scorecard",
-      "version": "0.5.12",
+      "version": "0.5.13",
       "transport": {
         "type": "stdio"
       }
