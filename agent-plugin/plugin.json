@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "mcp-scorecard",
+  "version": "0.5.12",
+  "description": "Score any MCP server for security, quality and agent-readiness (0-100, per-check findings) with the mcp-scorecard MCP server.",
+  "author": {
+    "name": "David Mosiah",
+    "url": "https://github.com/davidmosiah"
+  },
+  "homepage": "https://github.com/davidmosiah/mcp-scorecard",
+  "repository": "https://github.com/davidmosiah/mcp-scorecard",
+  "license": "MIT",
+  "keywords": [
+    "agent-readiness",
+    "audit",
+    "hermes",
+    "mcp",
+    "model-context-protocol",
+    "quality",
+    "scorecard"
+  ]
+}
